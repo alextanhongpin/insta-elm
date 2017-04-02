@@ -1,4 +1,5 @@
-module Main exposing (..)
+port module Main exposing (..)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( onClick )
@@ -8,7 +9,7 @@ import Components.Hello exposing ( hello )
 
 
 import Msgs exposing ( .. )
-
+import Model exposing ( .. )
 -- ATOMS
 import Atom.Header exposing ( app_header )
 
@@ -22,33 +23,58 @@ import Molecule.Card exposing ( card )
 
 main : Program Never Model Msg
 main =
-  Html.beginnerProgram 
-  { model = model
+  Html.program 
+  { init = init
   , view = view
-  , update = update 
+  , update = update
+  , subscriptions = subscriptions
   }
 
 
 -- MODEL
 
 
-type alias Model = 
-  { comment : String }
 
 model : Model
 model = 
-  { comment = "Hello" }
+  { comment = "Hello"
+  , fromPort = ""
+  }
+
+init : (Model, Cmd Msg)
+init = (model, Cmd.none)
 
 
 -- UPDATE
 
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp -> model
-    OnChange a -> { model | comment = a }
+    NoOp -> 
+      (model, Cmd.none)
+
+    -- the setStorage is port that is responsible for sending a model to the index.html
+    OnChange a -> 
+      ({ model | comment = a }, Cmd.batch [ setStorage model, Cmd.none ] )
+
+    -- listen to the external port
+    OnStorageSet a ->
+      ({ model | fromPort = a }, Cmd.none)
+
+-- SUBSCRIPTIONS
+
+
+port setStorage : Model -> Cmd msg
+port onStorageSet : (String -> msg) -> Sub msg
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  -- Sub.none
+  Sub.batch
+    [ onStorageSet OnStorageSet
+    ]
 
 
 -- VIEW
@@ -61,7 +87,7 @@ view model =
   div [] [
     app_header,
     br [] [],
-    card model.comment
+    card model
   ]
 
 
@@ -76,3 +102,4 @@ styles =
       , ( "border", "4px solid #337AB7")
       ]
   }
+

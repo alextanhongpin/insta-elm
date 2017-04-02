@@ -1,3 +1,3 @@
 module Msgs exposing (..)
 
-type Msg = NoOp | OnChange String
+type Msg = NoOp | OnChange String | OnStorageSet String

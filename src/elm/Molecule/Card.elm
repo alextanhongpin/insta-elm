@@ -3,11 +3,13 @@ module Molecule.Card exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
+
+import Model exposing (..)
 import Msgs exposing (..)
 
 import Atom.Comment exposing ( comment_box )
 
-card : String -> Html Msg
+card : Model -> Html Msg
 card model = 
     div [ class "card" ] [
         div [ class "card-header" ] [
@@ -29,8 +31,9 @@ card model =
             ],
             div [] [
                 b [] [ text "john doe" ],
-                span [] [ text model ]
+                span [] [ text model.fromPort ],
+                span [] [ text model.comment ]
             ],
-            comment_box model
+            comment_box model.comment
         ]
     ]
