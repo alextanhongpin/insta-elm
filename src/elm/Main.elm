@@ -66,7 +66,15 @@ update msg model =
 -- SUBSCRIPTIONS
 
 
+-- Pub
+
+
 port setStorage : Model -> Cmd msg
+
+
+-- Sub
+
+
 port onStorageSet : (String -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
