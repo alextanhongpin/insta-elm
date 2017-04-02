@@ -16,26 +16,33 @@ Ports can be confusing at first. Here's a few key concepts to understand:
 8. You have to use `Html.program` in order to subscribe to events from the `index.js`
 
 ```elm
--- PUBLISH TO JS
+{-- PUBLISH TO JS
+    * this is the name of the event that you will subscribe to in index.js
+    * in this example, we want to send a model to the index.js
+--} 
 port setStorage : Model -> Cmd msg
 
 
--- SUBSCRIBE FROM JS
+{-- SUBSCRIBE FROM JS
+    * this is the name of the listener that you will publish to in index.js
+    * in this example, we want to receive a string from the index.js
+--}
 port onStorageSet : (String -> msg) -> Sub msg
 
 
 update msg model =
   case msg of
-    AnActionThatWillTriggerTheJSSubscriber value -> 
+    -- The action that will trigger the subscriber in index.js
+    PublishToJSFile value -> 
       ({ model | key1 = value1 }, Cmd.batch [ setStorage model, Cmd.none ] )
-    ListeningToIndexJsPublisher value ->
+    SubscribeToJSFile value ->
       ({ model | key2 = value2 }, Cmd.none)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
-    [ onStorageSet ListeningToIndexJsPublisher
+    [ onStorageSet SubscribeToJSFile
     ]
 ```
 
@@ -47,10 +54,7 @@ var app = Elm.Main.embed(document.getElementById('main'))
 // Subscribe to setStorage
 app.ports.setStorage.subscribe(function (valueFromElmModel) {
     // doSomething()
+    // Publish to onStorageSet 
+    app.ports.onStorageSet.send('valueToSendToElm')
 })
-
-// Publish to onStorageSet 
-app.ports.onStorageSet.send(valueToSendToElm)
-
-
 ```
