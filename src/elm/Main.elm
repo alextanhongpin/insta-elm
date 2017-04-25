@@ -5,6 +5,7 @@ import Html exposing (..)
 import State exposing (..)
 import Types exposing (..)
 import View exposing (..)
+import Navigation exposing (..)
 
 
 -- APP
@@ -12,7 +13,7 @@ import View exposing (..)
 
 main : Program Never Model Msg
 main =
-  Html.program 
+  Navigation.program OnLocationChange
   { init = init
   , view = view
   , update = update

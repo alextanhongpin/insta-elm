@@ -3,9 +3,16 @@ port module State exposing (..)
 
 import Types exposing (..)
 import Rest exposing (..)
+import Navigation exposing (Location)
+import Routing
 
-init : (Model, Cmd Msg)
-init = (model, Cmd.none)
+init : Location -> (Model, Cmd Msg)
+init location =
+  let
+    currentRoute =
+      Routing.parseLocation location
+  in
+    (model currentRoute, Cmd.none)
 
 
 -- UPDATE
@@ -19,7 +26,7 @@ update msg model =
 
     -- the setStorage is port that is responsible for sending a model to the index.html
     OnChange a -> 
-      ({ model | comment = a }, Cmd.batch [ setStorage model, Cmd.none ] )
+      ({ model | comment = a }, Cmd.batch [ setStorage "Hello world", Cmd.none ] )
 
     -- listen to the external port
     OnStorageSet a ->
@@ -34,6 +41,13 @@ update msg model =
     FetchService ->
       (model, serviceAPI model.url )
 
+    OnLocationChange location -> 
+      let
+        newRoute = 
+          Routing.parseLocation location
+      in
+      ( { model | route = newRoute }, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -42,7 +56,7 @@ update msg model =
 -- Pub
 
 
-port setStorage : Model -> Cmd msg
+port setStorage : String -> Cmd msg
 
 
 -- Sub

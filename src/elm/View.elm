@@ -1,6 +1,7 @@
 module View exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (href)
 import Html.Events exposing ( onClick )
 import Types exposing (..)
 
@@ -19,15 +20,26 @@ import Molecule.Card exposing ( card )
 -- CSS can be applied via class names or inline style attrib
 view : Model -> Html Msg
 view model =
-  div [] [
-    app_header,
-    button [ onClick FetchService ] [ text "Fetch service" ],
-    div [ ] [ text model.metadata.title ],
-    div [ ] [ text model.metadata.body ],
-    div [ ] [ text (toString(model.metadata.id)) ],
-    div [ ] [ text (toString(model.metadata.userId)) ],
-    card model
-  ]
+  case model.route of
+      PlayersRoute ->
+        div [ ] [
+          div [] [ text "This is /players route" ],
+          a [ href "#players/1"] [ text "Go to player 1 page" ]
+        ]
+
+      PlayerRoute id ->
+        div [ ] [
+          app_header,
+          div [] [ text "This is the player" ],
+          button [ onClick FetchService ] [ text "Fetch service" ],
+          div [ ] [ text model.metadata.title ],
+          div [ ] [ text model.metadata.body ],
+          div [ ] [ text (toString(model.metadata.id)) ],
+          div [ ] [ text (toString(model.metadata.userId)) ],
+          card model
+        ]
+      NotFoundRoute ->
+        notFoundView
 
 
 -- CSS STYLES
@@ -41,3 +53,9 @@ styles =
       , ( "border", "4px solid #337AB7")
       ]
   }
+
+notFoundView : Html msg
+notFoundView =
+    div []
+        [ text "Not found"
+        ]
