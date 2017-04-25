@@ -58,3 +58,43 @@ app.ports.setStorage.subscribe(function (valueFromElmModel) {
     app.ports.onStorageSet.send('valueToSendToElm')
 })
 ```
+
+## Http Request
+
+Making http request in Elm is simple.
+
+```elm
+
+import Http
+import Json.Decode as Decode
+
+
+-- GET JSON
+
+
+getMetadata : Http.Request Metadata
+getMetadata =
+  Http.get "https://example.api/endpoint" decodeMetadata
+
+type alias Metadata =
+  { author : String
+  , pages: Int
+  }
+
+decodeMetadata : Decode.Decoder Metadata
+decodeMetadata = 
+  Decode.map2 Metadata -- If you need to map 4 items, use map4
+    (Decode.field "author" Decode.string)
+    (Decode.field "pages" Decode.int)
+
+
+-- SEND REQUESTS
+
+type Msg
+  = LoadMetadata (Result Http.Error Metadata)
+
+
+send : Cmd Msg
+send = 
+  Http.send LoadMetadata getMetadata
+```

@@ -11,8 +11,7 @@ app_header =
     div [ class "header" ] [
         div [ class "header-brand" ] [ text "InstaElm" ],
         div [ class "header-links" ] [
-            a [] [ text "Icon 1" ],
-            a [] [ text "Icon 2" ],
-            a [] [ text "Icon 3" ]
+            a [] [ text "Login" ],
+            a [] [ text "Signup" ]
         ]
     ]

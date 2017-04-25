@@ -1,7 +1,7 @@
 module Atom.Comment exposing (..)
 
 
-import Msgs exposing (..)
+import Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)

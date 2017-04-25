@@ -3,9 +3,7 @@ module Molecule.Card exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
-
-import Model exposing (..)
-import Msgs exposing (..)
+import Types exposing (..)
 
 import Atom.Comment exposing ( comment_box )
 
