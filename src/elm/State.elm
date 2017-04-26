@@ -5,6 +5,8 @@ import Types exposing (..)
 import Rest exposing (..)
 import Navigation exposing (Location)
 import Routing
+import Page.Login.Types
+import Page.Login.State
 
 init : Location -> (Model, Cmd Msg)
 init location =
@@ -48,6 +50,30 @@ update msg model =
       in
       ( { model | route = newRoute }, Cmd.none )
 
+    SubGetAccessToken token ->
+      ({ model | accessToken = token }, Cmd.none)
+
+    LoginPageMsg childMsg ->
+      case childMsg of
+        Page.Login.Types.Login ->
+          let
+            ( loginModel, loginCmd ) = 
+              Page.Login.State.update childMsg model.loginPage
+          in
+            ({ model | loginPage = loginModel }
+            , Cmd.map LoginPageMsg loginCmd
+            )
+
+        Page.Login.Types.OnInputEmail email ->
+          let
+            ( loginModel, loginCmd ) = 
+              Page.Login.State.update childMsg model.loginPage
+          in
+            ({ model | loginPage = loginModel }
+            , Cmd.map LoginPageMsg loginCmd
+            )
+
+          
 
 
 -- SUBSCRIPTIONS
@@ -69,4 +95,13 @@ subscriptions model =
   -- Sub.none
   Sub.batch
     [ onStorageSet OnStorageSet
+    ]
+
+
+-- A subscriber to get access token from the localStorage
+port portSubscribeToken : (String -> msg) -> Sub msg
+subAccessToken : Model -> Sub Msg
+subAccessToken model =
+  Sub.batch
+    [ portSubscribeToken SubGetAccessToken
     ]

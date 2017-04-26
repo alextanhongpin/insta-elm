@@ -4,7 +4,7 @@ module Types exposing (..)
 import Http
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
-
+import Page.Login.Types
 -- Model
 
 
@@ -14,6 +14,8 @@ type alias Model =
   , url : String
   , metadata : Metadata
   , route: Route
+  , accessToken : String
+  , loginPage : Page.Login.Types.Model
   }
 
 type alias Metadata =
@@ -30,6 +32,8 @@ model route =
   , url = ""
   , metadata = Metadata 0 0 "" ""
   , route = route
+  , accessToken = ""
+  , loginPage = Page.Login.Types.model
   }
 
 type alias PlayerId =
@@ -47,8 +51,10 @@ type Msg
   | FireAPI (Result Http.Error Metadata) 
   | FetchService
   | OnLocationChange Location
+  | SubGetAccessToken String
+  | LoginPageMsg Page.Login.Types.Msg
 
 type Route
-  = PlayersRoute
+  = PlayersRoute -- the route for players
   | PlayerRoute PlayerId
   | NotFoundRoute

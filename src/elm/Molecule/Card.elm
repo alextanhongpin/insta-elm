@@ -30,6 +30,7 @@ card model =
             div [] [
                 b [] [ text "john doe" ],
                 span [] [ text model.fromPort ],
+                div [] [ text model.accessToken ],
                 span [] [ text model.comment ]
             ],
             comment_box model.comment

@@ -12,7 +12,7 @@ import Atom.Header exposing ( app_header )
 
 -- MOLECULES
 import Molecule.Card exposing ( card )
-
+import Page.Login.View
 
 -- VIEW
 
@@ -24,6 +24,7 @@ view model =
       PlayersRoute ->
         div [ ] [
           div [] [ text "This is /players route" ],
+          Html.map LoginPageMsg (Page.Login.View.view model.loginPage),
           a [ href "#players/1"] [ text "Go to player 1 page" ]
         ]
 
@@ -36,6 +37,7 @@ view model =
           div [ ] [ text model.metadata.body ],
           div [ ] [ text (toString(model.metadata.id)) ],
           div [ ] [ text (toString(model.metadata.userId)) ],
+          div [ ] [ text ("This is the access token:" ++ model.accessToken) ], 
           card model
         ]
       NotFoundRoute ->
