@@ -2,12 +2,25 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
 @import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
+
 // can add Boostrap overrides, additional Sass/CSS below...
 
 
 @import './constants.scss';
+
+
+// Atoms
 @import './atom/header.scss';
+
+
+// Molecules
 @import './molecule/card.scss';
+
+
+// Pages
+@import './page/home.scss';
+@import './page/login.scss';
+@import './page/profile.scss';
 
 
 body {

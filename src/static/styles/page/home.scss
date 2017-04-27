@@ -1,0 +1,29 @@
+.page--home {
+	text-align: center;
+}
+
+.photo-grids {
+	background: #cdcdcd;
+	height: 480px;
+	width: 100%;
+	-webkit-animation: fadeIn 1s ease-out forwards;
+	animation: fadeIn 1s ease-out forwards;
+}
+
+@webkit-keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

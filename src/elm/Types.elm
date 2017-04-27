@@ -1,10 +1,10 @@
--- Contains Model and Msg
+-- Contains Model and Msg, and Route
 module Types exposing (..)
 
 import Http
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
-import Page.Login.Types
+import Page.Login.Types as LoginType
 -- Model
 
 
@@ -15,7 +15,8 @@ type alias Model =
   , metadata : Metadata
   , route: Route
   , accessToken : String
-  , loginPage : Page.Login.Types.Model
+  , loginPage : LoginType.Model
+  , isAuthorized : Bool
   }
 
 type alias Metadata =
@@ -33,7 +34,8 @@ model route =
   , metadata = Metadata 0 0 "" ""
   , route = route
   , accessToken = ""
-  , loginPage = Page.Login.Types.model
+  , loginPage = LoginType.model
+  , isAuthorized = False
   }
 
 
@@ -51,8 +53,9 @@ type Msg
   | FetchService
   | OnLocationChange Location
   | SubGetAccessToken String
-  | LoginPageMsg Page.Login.Types.Msg
+  | LoginPageMsg LoginType.Msg
   | NavigateTo Route
+  | Logout -- Log the user out
 
 
 type Route
@@ -62,3 +65,4 @@ type Route
   | RegisterRoute
   | HomeRoute
   | NotFoundRoute
+  | ProfileRoute

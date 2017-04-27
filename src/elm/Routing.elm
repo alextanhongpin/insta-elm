@@ -3,7 +3,7 @@ module Routing exposing (..)
 import Navigation exposing (Location)
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
-import UrlParser exposing (..)
+import UrlParser as Url exposing (..)
 
 import Json.Decode as Json
 import Types exposing (..)
@@ -20,6 +20,7 @@ matchers =
     , map LoginRoute (s "login")
     , map RegisterRoute (s "register")
     , map HomeRoute (s "home")
+    , map ProfileRoute (s "profile")
     ]
 
 parseLocation : Location -> Route
@@ -51,6 +52,9 @@ reverseRoute route =
 
     RegisterRoute ->
       "/register"
+
+    ProfileRoute ->
+      "/profile"
 
     NotFoundRoute ->
       "/404"

@@ -7,12 +7,18 @@ module Page.Login.Types exposing (..)
 type alias Model = 
     { placeholder : String
     , email : String
+    , password : String
+    , hint : String
+    , isAuthorized : Bool
     }
 
 model : Model
 model = 
     { placeholder = ""
     , email = ""
+    , password = ""
+    , hint = ""
+    , isAuthorized = False
     }
 
 
@@ -22,3 +28,5 @@ model =
 type Msg 
     = Login
     | OnInputEmail String
+    | OnInputPassword String
+    | OnSubmitLogin

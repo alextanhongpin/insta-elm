@@ -10,19 +10,20 @@ import Html.Attributes exposing (href)
 import Html.Events exposing ( onClick, onWithOptions )
 import Types exposing (..)
 
-
-import Routing exposing (reverseRoute, onClickPreventDefault)
-
--- ATOMS
-import Atom.Header exposing ( app_header )
+import Atom.Header.View as Header exposing (view)
 
 
 -- MOLECULES
+
+
 import Molecule.Card exposing ( card )
 import Page.Login.View as LoginPage
 import Page.Home.View as HomePage
+import Page.Profile.View as ProfilePage
+
 
 -- VIEW
+
 
 -- Html is defined as: elem [ attribs ][ children ]
 -- CSS can be applied via class names or inline style attrib
@@ -37,7 +38,6 @@ view model =
 
       PlayerRoute id ->
         div [ ] [
-          app_header,
           div [] [ text "This is the player" ],
           button [ onClick FetchService ] [ text "Fetch service" ],
           div [ ] [ text model.metadata.title ],
@@ -53,23 +53,24 @@ view model =
 
       LoginRoute -> 
         div [] 
-        [ a [ href "/home" ] [ text "Back to Home" ]
+        [ Header.view model
         , Html.map LoginPageMsg (LoginPage.view model.loginPage)
         ]
 
       HomeRoute -> 
+        div []
+          [ Header.view model
+          , HomePage.view 
+          ]
+
+      ProfileRoute ->
         div [] 
-        [ h1 [] [ text "Welcome to Instagram!" ]
-        , a [ href (reverseRoute LoginRoute)
-            , onClickPreventDefault (NavigateTo LoginRoute) ] [ text "Login" ]
-        , a [ href "/register" ] [ text "Register" ]
-        , HomePage.view 
-        ]
+          [ Header.view model
+          , ProfilePage.view
+          ]
 
       NotFoundRoute ->
         notFoundView
-
-
 
 
 -- CSS STYLES

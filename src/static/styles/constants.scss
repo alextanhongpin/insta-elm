@@ -9,3 +9,14 @@ $background-primary: #F7F7F7;
   display: -webkit-flex;     /* NEW - Chrome */
   display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
 }
+
+%no-link:link,
+%no-link:visited,
+%no-link:hover,
+%no-link:active {
+	text-decoration: none;
+	color: inherit;
+}
+.h4 {
+	color: #848484;
+}

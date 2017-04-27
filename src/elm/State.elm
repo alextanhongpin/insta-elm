@@ -5,9 +5,10 @@ import Types exposing (..)
 import Rest exposing (..)
 import Navigation exposing (Location)
 import Routing exposing (reverseRoute)
-import Page.Login.Types
-import Page.Login.State
+import Page.Login.Types as LoginUnion
+import Page.Login.State as LoginState
 
+import Types exposing (Route(LoginRoute, RegisterRoute, HomeRoute), Msg(NavigateTo))
 
 -- Initialize the appliction with a default location, defined by `top` in Routing.elm
 
@@ -58,25 +59,63 @@ update msg model =
     SubGetAccessToken token ->
       ({ model | accessToken = token }, Cmd.none)
 
+    Logout -> 
+      let 
+        msg = NavigateTo LoginRoute
+      in
+        let 
+          updatedModel = { model | isAuthorized = False }
+        in
+          update msg updatedModel
+
     LoginPageMsg childMsg ->
       case childMsg of
-        Page.Login.Types.Login ->
+        LoginUnion.Login ->
           let
             ( loginModel, loginCmd ) = 
-              Page.Login.State.update childMsg model.loginPage
+             LoginState.update childMsg model.loginPage
           in
             ({ model | loginPage = loginModel }
             , Cmd.map LoginPageMsg loginCmd
             )
 
-        Page.Login.Types.OnInputEmail email ->
+        LoginUnion.OnInputEmail email ->
           let
             ( loginModel, loginCmd ) = 
-              Page.Login.State.update childMsg model.loginPage
+              LoginState.update childMsg model.loginPage
           in
             ({ model | loginPage = loginModel }
             , Cmd.map LoginPageMsg loginCmd
             )
+
+        LoginUnion.OnInputPassword email ->
+          let
+            ( loginModel, loginCmd ) = 
+              LoginState.update childMsg model.loginPage
+          in
+            ({ model | loginPage = loginModel }
+            , Cmd.map LoginPageMsg loginCmd
+            )
+
+        LoginUnion.OnSubmitLogin ->
+          let
+            ( loginModel, loginCmd ) = 
+              LoginState.update childMsg model.loginPage
+          in
+            -- Redirect the user if success
+            if .isAuthorized loginModel then
+              let 
+                msg = NavigateTo ProfileRoute
+              in
+                let 
+                  updatedModel = { model | loginPage = loginModel, isAuthorized = True }
+                in
+                  update msg updatedModel
+            else
+              ({ model | loginPage = loginModel }
+              , Cmd.map LoginPageMsg loginCmd
+              )
+
     NavigateTo route -> 
       (model, Navigation.newUrl (reverseRoute route))
 
