@@ -36,13 +36,12 @@ model route =
   , loginPage = Page.Login.Types.model
   }
 
-type alias PlayerId =
-  String
 
 -- Msg
 
 
-
+type alias PlayerId =
+  String
 
 type Msg 
   = NoOp 
@@ -53,8 +52,13 @@ type Msg
   | OnLocationChange Location
   | SubGetAccessToken String
   | LoginPageMsg Page.Login.Types.Msg
+  | NavigateTo Route
+
 
 type Route
   = PlayersRoute -- the route for players
   | PlayerRoute PlayerId
+  | LoginRoute
+  | RegisterRoute
+  | HomeRoute
   | NotFoundRoute

@@ -1,19 +1,24 @@
--- Contains init, update, subscriptions
+-- State.elm contains init, update, subscriptions
 port module State exposing (..)
 
 import Types exposing (..)
 import Rest exposing (..)
 import Navigation exposing (Location)
-import Routing
+import Routing exposing (reverseRoute)
 import Page.Login.Types
 import Page.Login.State
+
+
+-- Initialize the appliction with a default location, defined by `top` in Routing.elm
 
 init : Location -> (Model, Cmd Msg)
 init location =
   let
+    -- Get the current route
     currentRoute =
       Routing.parseLocation location
   in
+    -- Initialize the model with the current route
     (model currentRoute, Cmd.none)
 
 
@@ -72,6 +77,8 @@ update msg model =
             ({ model | loginPage = loginModel }
             , Cmd.map LoginPageMsg loginCmd
             )
+    NavigateTo route -> 
+      (model, Navigation.newUrl (reverseRoute route))
 
           
 

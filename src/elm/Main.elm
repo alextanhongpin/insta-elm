@@ -1,12 +1,9 @@
-module Main exposing (..)
+module Main exposing (main)
 
-import Html exposing (..)
-
-import State exposing (..)
-import Types exposing (..)
-import View exposing (..)
-import Navigation exposing (..)
-
+import State exposing (init, update, subscriptions)
+import Types exposing (Msg(OnLocationChange), Model)
+import View exposing (view)
+import Navigation
 
 -- APP
 

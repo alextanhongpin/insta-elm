@@ -2,9 +2,9 @@ module Atom.Comment exposing (..)
 
 
 import Types exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, div, input)
+import Html.Attributes exposing (placeholder, value)
+import Html.Events exposing (onInput)
 
 
 comment_box : String -> Html Msg

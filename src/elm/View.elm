@@ -1,10 +1,17 @@
+{-- 
+  View.elm
+  * Contains the main view that is handled by routing
+--}
+
 module View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (href)
-import Html.Events exposing ( onClick )
+import Html.Events exposing ( onClick, onWithOptions )
 import Types exposing (..)
 
+
+import Routing exposing (reverseRoute, onClickPreventDefault)
 
 -- ATOMS
 import Atom.Header exposing ( app_header )
@@ -12,7 +19,8 @@ import Atom.Header exposing ( app_header )
 
 -- MOLECULES
 import Molecule.Card exposing ( card )
-import Page.Login.View
+import Page.Login.View as LoginPage
+import Page.Home.View as HomePage
 
 -- VIEW
 
@@ -24,7 +32,6 @@ view model =
       PlayersRoute ->
         div [ ] [
           div [] [ text "This is /players route" ],
-          Html.map LoginPageMsg (Page.Login.View.view model.loginPage),
           a [ href "#players/1"] [ text "Go to player 1 page" ]
         ]
 
@@ -40,8 +47,29 @@ view model =
           div [ ] [ text ("This is the access token:" ++ model.accessToken) ], 
           card model
         ]
+
+      RegisterRoute -> 
+        div [] [ text "Register"]
+
+      LoginRoute -> 
+        div [] 
+        [ a [ href "/home" ] [ text "Back to Home" ]
+        , Html.map LoginPageMsg (LoginPage.view model.loginPage)
+        ]
+
+      HomeRoute -> 
+        div [] 
+        [ h1 [] [ text "Welcome to Instagram!" ]
+        , a [ href (reverseRoute LoginRoute)
+            , onClickPreventDefault (NavigateTo LoginRoute) ] [ text "Login" ]
+        , a [ href "/register" ] [ text "Register" ]
+        , HomePage.view 
+        ]
+
       NotFoundRoute ->
         notFoundView
+
+
 
 
 -- CSS STYLES

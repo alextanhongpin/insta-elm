@@ -98,3 +98,39 @@ send : Cmd Msg
 send = 
   Http.send LoadMetadata getMetadata
 ```
+
+
+## Routing without the Hash
+
+To be completed...
+
+## Best practices
+
+1. Make the imports explicit
+
+```elm
+-- Bad
+import View exposing (..)
+import Html.Events exposing (..)
+
+-- Good
+import View exposing (view)
+import Html.Events exposing (onClick, onWithOptions)
+
+```
+
+2. Sometimes it's better to make the package explicit to avoid confusion
+```elm
+-- Good
+import Navigation exposing (Location)
+parseLocation : Location -> Route
+
+-- Better
+import Navigation
+parseLocation : Navigation.Location -> Route
+```
+
+3. Shorten the imported package with alias
+```elm
+import Page.Login.View as LoginPage
+```
