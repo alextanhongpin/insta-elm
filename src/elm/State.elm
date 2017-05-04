@@ -5,8 +5,17 @@ import Types exposing (..)
 import Rest exposing (..)
 import Navigation exposing (Location)
 import Routing exposing (reverseRoute)
+
+
+-- PAGE
+
+
 import Page.Login.Types as LoginUnion
 import Page.Login.State as LoginState
+import Page.Photo.Types as PhotoUnion
+import Page.Photo.State as PhotoState
+-- import Page.Register.Types as RegisterUnion
+import Page.Register.State as RegisterState
 
 import Types exposing (Route(LoginRoute, RegisterRoute, HomeRoute), Msg(NavigateTo))
 
@@ -20,7 +29,7 @@ init location =
       Routing.parseLocation location
   in
     -- Initialize the model with the current route
-    (model currentRoute, Cmd.none)
+    (model currentRoute, Cmd.batch [ dispatchGreet "Initializing app", authenticate (), Cmd.none ])
 
 
 -- UPDATE
@@ -70,33 +79,6 @@ update msg model =
 
     LoginPageMsg childMsg ->
       case childMsg of
-        LoginUnion.Login ->
-          let
-            ( loginModel, loginCmd ) = 
-             LoginState.update childMsg model.loginPage
-          in
-            ({ model | loginPage = loginModel }
-            , Cmd.map LoginPageMsg loginCmd
-            )
-
-        LoginUnion.OnInputEmail email ->
-          let
-            ( loginModel, loginCmd ) = 
-              LoginState.update childMsg model.loginPage
-          in
-            ({ model | loginPage = loginModel }
-            , Cmd.map LoginPageMsg loginCmd
-            )
-
-        LoginUnion.OnInputPassword email ->
-          let
-            ( loginModel, loginCmd ) = 
-              LoginState.update childMsg model.loginPage
-          in
-            ({ model | loginPage = loginModel }
-            , Cmd.map LoginPageMsg loginCmd
-            )
-
         LoginUnion.OnSubmitLogin ->
           let
             ( loginModel, loginCmd ) = 
@@ -115,11 +97,53 @@ update msg model =
               ({ model | loginPage = loginModel }
               , Cmd.map LoginPageMsg loginCmd
               )
+        _ ->
+          let
+            ( loginModel, loginCmd ) = 
+              LoginState.update childMsg model.loginPage
+          in
+            ({ model | loginPage = loginModel }
+            , Cmd.map LoginPageMsg loginCmd
+            )
+    PhotoPageMsg childMsg ->
+      case childMsg of
+        PhotoUnion.Like ->
+          let
+            ( photoModel, photoCmd ) = 
+             PhotoState.update childMsg model.photoPage
+          in
+            ({ model | photoPage = photoModel }
+            , Cmd.map PhotoPageMsg photoCmd
+            )
+        _ ->
+          let
+            ( photoModel, photoCmd ) = 
+             PhotoState.update childMsg model.photoPage
+          in
+            ({ model | photoPage = photoModel }
+            , Cmd.map PhotoPageMsg photoCmd
+            )
+    RegisterPageMsg childMsg ->
+      case childMsg of
+        _ -> 
+          let
+            ( registerModel, registerCmd ) = 
+             RegisterState.update childMsg model.registerPage
+          in
+            ({ model | registerPage = registerModel }
+            , Cmd.map RegisterPageMsg registerCmd
+            )
 
     NavigateTo route -> 
-      (model, Navigation.newUrl (reverseRoute route))
+      -- Reset the state when go to a new page
+      ({ model | photoPage = PhotoUnion.model }, Navigation.newUrl (reverseRoute route))
 
-          
+    -- Example of using a dispatcher
+    Greet str -> 
+      ({ model | greet = str }, Cmd.none)
+
+    Authenticate str -> 
+      ({ model | greet = str}, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -129,20 +153,15 @@ update msg model =
 
 
 port setStorage : String -> Cmd msg
-
+port dispatchGreet : String -> Cmd msg
+port authenticate : () -> Cmd msg
 
 -- Sub
 
 
 port onStorageSet : (String -> msg) -> Sub msg
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  -- Sub.none
-  Sub.batch
-    [ onStorageSet OnStorageSet
-    ]
-
+port subscribeGreet : (String -> msg) -> Sub msg
+port onAuthenticateStateChange : (String -> msg) -> Sub msg
 
 -- A subscriber to get access token from the localStorage
 port portSubscribeToken : (String -> msg) -> Sub msg
@@ -150,4 +169,17 @@ subAccessToken : Model -> Sub Msg
 subAccessToken model =
   Sub.batch
     [ portSubscribeToken SubGetAccessToken
+    ]
+
+
+
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  -- Sub.none
+  Sub.batch
+    [ onStorageSet OnStorageSet
+    , subscribeGreet Greet
+    , onAuthenticateStateChange Authenticate
     ]

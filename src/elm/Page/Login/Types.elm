@@ -1,4 +1,4 @@
-module Page.Login.Types exposing (..)
+module Page.Login.Types exposing (Model, Msg(..), model)
 
 
 -- MODEL
@@ -11,6 +11,7 @@ type alias Model =
     , hint : String
     , isAuthorized : Bool
     }
+
 
 model : Model
 model = 

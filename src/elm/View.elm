@@ -17,9 +17,16 @@ import Atom.Header.View as Header exposing (view)
 
 
 import Molecule.Card exposing ( card )
+
+
+-- PAGE
+
+
 import Page.Login.View as LoginPage
 import Page.Home.View as HomePage
 import Page.Profile.View as ProfilePage
+import Page.Photo.View as PhotoPage
+import Page.Register.View as RegisterPage
 
 
 -- VIEW
@@ -49,7 +56,10 @@ view model =
         ]
 
       RegisterRoute -> 
-        div [] [ text "Register"]
+        div [] 
+        [ Header.view model
+        , Html.map RegisterPageMsg (RegisterPage.view model.registerPage)
+        ]
 
       LoginRoute -> 
         div [] 
@@ -60,13 +70,24 @@ view model =
       HomeRoute -> 
         div []
           [ Header.view model
-          , HomePage.view 
+          , HomePage.view
           ]
 
       ProfileRoute ->
         div [] 
           [ Header.view model
           , ProfilePage.view
+          ]
+
+      PhotoRoute id ->
+        --let 
+        --  initModel 
+        --    = { model | photoPage = PhotoPageTypes.model }
+        --in
+        -- Problem: How do I reset the state when I enter a new page
+        div [] 
+          [ Header.view model
+          , Html.map PhotoPageMsg (PhotoPage.view model.photoPage)
           ]
 
       NotFoundRoute ->

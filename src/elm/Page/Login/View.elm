@@ -4,15 +4,9 @@ import Html exposing (Html, br, button, div, form, input, text, label)
 import Html.Attributes exposing (placeholder, value, class, type_, id, for)
 import Html.Events exposing (onClick, onInput)
 import Routing exposing (onClickPreventDefault)
-
-
--- ATOMS
-
-
-
+import Molecule.Email as Email exposing (view)
 
 -- PAGES
-
 
 import Page.Login.Types exposing (Model, Msg(OnInputEmail, OnInputPassword, OnSubmitLogin))
 
@@ -24,6 +18,7 @@ view model =
         , form [] 
             [ div [ class "hint hint--error" ] [ text model.hint ]
             , inputGroupLogin model
+            , Email.view (Msg OnInputEmail model.password)
             , br [] []
             , passwordGroupLogin model
             , br [] []

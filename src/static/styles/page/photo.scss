@@ -1,0 +1,13 @@
+.photo-grid {
+	height: 320px;
+	width: 100%;
+	background: $background-primary;
+}
+.icon-favorite.is-selected {
+	color: red;
+}
+
+.comment-list {
+	padding: 10px 0;
+	border: 1px solid silver;
+}

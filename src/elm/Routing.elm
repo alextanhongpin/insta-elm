@@ -4,11 +4,8 @@ import Navigation exposing (Location)
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
 import UrlParser as Url exposing (..)
-
 import Json.Decode as Json
 import Types exposing (..)
-
-
 
 
 matchers : Parser (Route -> a) a
@@ -21,6 +18,7 @@ matchers =
     , map RegisterRoute (s "register")
     , map HomeRoute (s "home")
     , map ProfileRoute (s "profile")
+    , map PhotoRoute (s "photos" </> string)
     ]
 
 parseLocation : Location -> Route
@@ -55,6 +53,9 @@ reverseRoute route =
 
     ProfileRoute ->
       "/profile"
+
+    PhotoRoute id ->
+      "/photos/" ++ id
 
     NotFoundRoute ->
       "/404"

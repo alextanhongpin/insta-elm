@@ -1,4 +1,4 @@
-module Page.Login.State exposing (..)
+module Page.Login.State exposing (update)
 
 import Page.Login.Types exposing (Model, Msg(Login, OnInputEmail, OnInputPassword, OnSubmitLogin))
 

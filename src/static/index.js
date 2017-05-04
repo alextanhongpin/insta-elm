@@ -15,3 +15,31 @@ app.ports.setStorage.subscribe(function (word) {
   app.ports.portSubscribeToken.send('asdio1i23lk1n')
 })
 
+app.ports.dispatchGreet.subscribe(function (greet) {
+  console.log('Listening to dispatch greet:', greet)
+  app.ports.subscribeGreet.send('this is random')
+})
+
+app.ports.authenticate.subscribe(function () {
+  var config = {
+    // Place config here
+
+  }
+  firebase.initializeApp(config)
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    console.log(user)
+    if (user) {
+      app.ports.onAuthenticateStateChange.send('success')
+      var displayName = user.displayName
+      var email = user.email
+      var emailVerified = user.emailVerified
+      var photoURL = user.photoURL
+      var isAnonymous = user.isAnonymous
+      var uid = user.uid
+      var providerData = user.providerData
+    } else {
+      app.ports.onAuthenticateStateChange.send('fail')
+    }
+  })
+})

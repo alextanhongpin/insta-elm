@@ -4,7 +4,9 @@ module Types exposing (..)
 import Http
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
-import Page.Login.Types as LoginType
+import Page.Login.Types as LoginTypes
+import Page.Photo.Types as PhotoTypes
+import Page.Register.Types as RegisterTypes
 -- Model
 
 
@@ -15,9 +17,24 @@ type alias Model =
   , metadata : Metadata
   , route: Route
   , accessToken : String
-  , loginPage : LoginType.Model
+  , greet : String
+  -- Page Model
+  , loginPage : LoginTypes.Model
+  , photoPage : PhotoTypes.Model
+  , registerPage : RegisterTypes.Model
+  -- Auth Model
   , isAuthorized : Bool
+  , user : User
   }
+
+type alias User = 
+  { displayName : String
+  , email : String
+  , emailVerified : Bool
+  , photoURL : String
+  , isAnonymous : Bool
+  , uid : String
+}
 
 type alias Metadata =
   { userId : Int
@@ -34,8 +51,12 @@ model route =
   , metadata = Metadata 0 0 "" ""
   , route = route
   , accessToken = ""
-  , loginPage = LoginType.model
+  , loginPage = LoginTypes.model
+  , photoPage = PhotoTypes.model
+  , registerPage = RegisterTypes.model
   , isAuthorized = False
+  , greet = ""
+  , user = User "" "" False "" False ""
   }
 
 
@@ -43,6 +64,9 @@ model route =
 
 
 type alias PlayerId =
+  String
+
+type alias PhotoId =
   String
 
 type Msg 
@@ -53,9 +77,18 @@ type Msg
   | FetchService
   | OnLocationChange Location
   | SubGetAccessToken String
-  | LoginPageMsg LoginType.Msg
   | NavigateTo Route
   | Logout -- Log the user out
+  | Greet String
+  | Authenticate String
+  
+
+  -- PAGE MSG
+
+
+  | LoginPageMsg LoginTypes.Msg
+  | PhotoPageMsg PhotoTypes.Msg -- Photo msg
+  | RegisterPageMsg RegisterTypes.Msg
 
 
 type Route
@@ -66,3 +99,4 @@ type Route
   | HomeRoute
   | NotFoundRoute
   | ProfileRoute
+  | PhotoRoute PhotoId

@@ -13,5 +13,7 @@ view =
         , div [ class "h4"] [ text "Share your photos with millions of users"]
         , br [] []
         , div [ class "photo-grids" ] []
+        , br [] []
+        , div [] [ text "Post your photos here" ]
+        , br [] []
         ]
-

@@ -1,14 +1,23 @@
 module Page.Profile.View exposing (view)
 
-import Html exposing (Html, b, br, div, span, text)
-import Html.Attributes exposing (class)
-import Types exposing (Msg)
+import Html exposing (Html, a, b, br, div, span, text)
+import Html.Attributes exposing (class, href)
+import Types exposing (Msg(NavigateTo), Route(PhotoRoute))
+
+import Routing exposing (reverseRoute, onClickPreventDefault)
+
+
+-- VIEW
+
 
 view : Html Msg
-view = 
+view =
     div [ class "page page--profile" ] 
         [ user
         ]
+
+
+-- SUBVIEW
 
 
 user : Html Msg
@@ -23,9 +32,13 @@ user =
             , span [] [ text " " ] 
             , span [] [ text "100 Photos" ]
             ]
-        , div [] (List.map grids ["photo1", "photo2", "photo3","photo4", "photo5", "photo6"])
+        , div [] (List.map grids ["1", "2", "3", "4", "5", "6"])
     ]
+
 
 grids : String -> Html Msg
 grids str =
-    div [ class "grid" ] [ text str ]
+    a [ class "grid"
+      , href (reverseRoute (PhotoRoute str))
+      , onClickPreventDefault (NavigateTo (PhotoRoute str))
+     ] [ text str ]

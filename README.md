@@ -134,3 +134,15 @@ parseLocation : Navigation.Location -> Route
 ```elm
 import Page.Login.View as LoginPage
 ```
+
+
+### User Stories
+
+Page Login
+- can authenticate users
+- can display error message if login fail
+
+Page Photo
+- can view photo
+- can favorite photo
+- can comment (CRUD)
