@@ -1,11 +1,12 @@
-module Routing exposing (..)
+module Router.Main exposing (..)
 
 import Navigation exposing (Location)
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
 import UrlParser as Url exposing (..)
 import Json.Decode as Json
-import Types exposing (..)
+
+import Router.Types exposing (Route(..))
 
 
 matchers : Parser (Route -> a) a

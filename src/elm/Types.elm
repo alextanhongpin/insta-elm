@@ -7,6 +7,9 @@ import RemoteData exposing (WebData)
 import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
 import Page.Register.Types as RegisterTypes
+import Page.Profile.Types as ProfileTypes
+
+import Router.Types exposing (Route)
 -- Model
 
 
@@ -18,23 +21,19 @@ type alias Model =
   , route: Route
   , accessToken : String
   , greet : String
+
   -- Page Model
+
   , loginPage : LoginTypes.Model
   , photoPage : PhotoTypes.Model
   , registerPage : RegisterTypes.Model
+  , profilePage : ProfileTypes.Model
   -- Auth Model
   , isAuthorized : Bool
-  , user : User
+  , user : LoginTypes.User
   }
 
-type alias User = 
-  { displayName : String
-  , email : String
-  , emailVerified : Bool
-  , photoURL : String
-  , isAnonymous : Bool
-  , uid : String
-}
+
 
 type alias Metadata =
   { userId : Int
@@ -54,20 +53,16 @@ model route =
   , loginPage = LoginTypes.model
   , photoPage = PhotoTypes.model
   , registerPage = RegisterTypes.model
+  , profilePage = ProfileTypes.model
   , isAuthorized = False
   , greet = ""
-  , user = User "" "" False "" False ""
+  , user = LoginTypes.User "" "" False "" False ""
   }
 
 
 -- Msg
 
 
-type alias PlayerId =
-  String
-
-type alias PhotoId =
-  String
 
 type Msg 
   = NoOp 
@@ -79,24 +74,24 @@ type Msg
   | SubGetAccessToken String
   | NavigateTo Route
   | Logout -- Log the user out
+  | LogoutSuccess String
   | Greet String
   | Authenticate String
-  
-
+  | AuthenticateSuccess LoginTypes.User
+  | RegisterCallback String
   -- PAGE MSG
-
-
   | LoginPageMsg LoginTypes.Msg
   | PhotoPageMsg PhotoTypes.Msg -- Photo msg
   | RegisterPageMsg RegisterTypes.Msg
+  | ProfilePageMsg ProfileTypes.Msg
 
 
-type Route
-  = PlayersRoute -- the route for players
-  | PlayerRoute PlayerId
-  | LoginRoute
-  | RegisterRoute
-  | HomeRoute
-  | NotFoundRoute
-  | ProfileRoute
-  | PhotoRoute PhotoId
+--type Route
+--  = PlayersRoute -- the route for players
+--  | PlayerRoute PlayerId
+--  | LoginRoute
+--  | RegisterRoute
+--  | HomeRoute
+--  | NotFoundRoute
+--  | ProfileRoute
+--  | PhotoRoute PhotoId

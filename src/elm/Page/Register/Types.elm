@@ -1,4 +1,4 @@
-module Page.Register.Types exposing (Model, model, Msg(Register))
+module Page.Register.Types exposing (Model, model, Msg(Register, OnInputEmail, OnInputPassword))
 
 
 -- MODEL
@@ -21,4 +21,7 @@ model =
 -- MSG
 
 
-type Msg = Register
+type Msg 
+    = Register
+    | OnInputEmail String
+    | OnInputPassword String

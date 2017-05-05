@@ -1,7 +1,7 @@
 module Page.Photo.View exposing (view)
 
-import Html exposing (Html, b, button, div, text, i, input)
-import Html.Attributes exposing (class, type_, placeholder, value)
+import Html exposing (Html, b, button, div, text, i, input, img)
+import Html.Attributes exposing (class, type_, placeholder, value, src)
 import Html.Events exposing (onClick, onInput)
 -- import Types exposing (Msg)
 import Page.Photo.Types exposing (Comment, Model, 
@@ -10,7 +10,7 @@ import Page.Photo.Types exposing (Comment, Model,
 view : Model -> Html Msg
 view model =
     div [] 
-        [ div [ class "photo-grid" ] []
+        [ img [ class "photo-grid", src model.photoUrl ] []
         , b [] [ text "John Doe"]
         , div [] [ text "Photo" ]
         , i [ class (likeIconClassName model.isLiked), onClick Like ] [ text "favorite" ]
@@ -24,7 +24,8 @@ view model =
             , button [ onClick (AddComment model.comment) ] [ text "Submit" ]
             ]
         , div [] [ text "Awesome event taking place at Malacca"]
-        , div [] ( List.map (commentView model) model.comments )
+        -- , div [] ( List.map (commentView model) model.comments )
+        , div [] ( List.map (newCommentView model) model.newComments)
         ]
 
 likeIconClassName : Bool -> String
@@ -32,14 +33,37 @@ likeIconClassName bool =
     if bool then "material-icons icon-favorite" else "material-icons icon-favorite is-selected"
 
 
-commentView : Model -> Comment -> Html Msg
-commentView model comment = 
+--commentView : Model -> Comment -> Html Msg
+--commentView model comment = 
+--    if 
+--        model.ghostComment.photoId == comment.photoId && model.isEditing == True
+--    then
+--        div [] 
+--            [ div [] 
+--                [ b [] [ text model.ghostComment.userId ]
+--                ]
+--            , input [ type_ "text", value model.ghostComment.text, onInput EditingComment ] []
+--            , div [] [ text model.errorEditTextEmpty ]
+--            , button [ onClick (CancelEdit model.ghostComment) ] [ text "Cancel Edit" ]
+--            , button [ onClick (SubmitEdit model.ghostComment) ] [ text "Submit Edit" ]
+--            ]
+--    else
+--        div [ class "comment-list" ] 
+--            [ b [] [ text comment.userId ]
+--            , div [] [ text (String.trim comment.text) ]
+--            , button [ onClick (DeleteComment comment) ] [ text "Delete" ]
+--            , button [ onClick (EditComment comment)] [ text "Edit" ]
+--            ]
+
+
+newCommentView : Model -> (String, Comment) -> Html Msg
+newCommentView model (commentId, comment) = 
     if 
-        model.ghostComment.id == comment.id && model.isEditing == True
+        model.ghostID == commentId && model.isEditing == True
     then
         div [] 
             [ div [] 
-                [ b [] [ text model.ghostComment.displayName ]
+                [ b [] [ text model.ghostComment.userId ]
                 ]
             , input [ type_ "text", value model.ghostComment.text, onInput EditingComment ] []
             , div [] [ text model.errorEditTextEmpty ]
@@ -48,10 +72,9 @@ commentView model comment =
             ]
     else
         div [ class "comment-list" ] 
-            [ b [] [ text comment.displayName ]
+            [ b [] [ text comment.userId ]
             , div [] [ text (String.trim comment.text) ]
             , button [ onClick (DeleteComment comment) ] [ text "Delete" ]
-            , button [ onClick (EditComment comment)] [ text "Edit" ]
+            , button [ onClick (EditComment commentId comment)] [ text "Edit" ]
             ]
-
 

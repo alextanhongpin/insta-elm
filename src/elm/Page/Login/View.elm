@@ -3,12 +3,11 @@ module Page.Login.View exposing (..)
 import Html exposing (Html, br, button, div, form, input, text, label)
 import Html.Attributes exposing (placeholder, value, class, type_, id, for)
 import Html.Events exposing (onClick, onInput)
-import Routing exposing (onClickPreventDefault)
-import Molecule.Email as Email exposing (view)
+import Router.Main exposing (onClickPreventDefault)
 
 -- PAGES
 
-import Page.Login.Types exposing (Model, Msg(OnInputEmail, OnInputPassword, OnSubmitLogin))
+import Page.Login.Types exposing (Model, Msg(Login, OnInputEmail, OnInputPassword))
 
 
 view : Model -> Html Msg
@@ -16,15 +15,13 @@ view model =
     div [ class "page page--login" ] 
         [ div [ class "page-title"] [ text "Login to Continue" ]
         , form [] 
-            [ div [ class "hint hint--error" ] [ text model.hint ]
+            [ div [ class "hint hint--error" ] [ text model.error ]
             , inputGroupLogin model
-            , Email.view (Msg OnInputEmail model.password)
             , br [] []
             , passwordGroupLogin model
             , br [] []
             , br [] []
-            , button [ onClickPreventDefault OnSubmitLogin ] [ text "Submit" ]
-
+            , button [ onClickPreventDefault Login ] [ text "Submit" ]
         ]
     ]
 

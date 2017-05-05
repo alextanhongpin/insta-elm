@@ -12,7 +12,7 @@ import Types exposing (..)
 
 import Atom.Header.View as Header exposing (view)
 
-
+import Router.Types exposing (..)
 -- MOLECULES
 
 
@@ -56,10 +56,15 @@ view model =
         ]
 
       RegisterRoute -> 
-        div [] 
-        [ Header.view model
-        , Html.map RegisterPageMsg (RegisterPage.view model.registerPage)
-        ]
+        let 
+          pageModel = model.registerPage
+          pageView = RegisterPage.view
+          pageMsg = RegisterPageMsg
+        in
+          div [] 
+          [ Header.view model
+          , Html.map pageMsg (pageView pageModel)
+          ]
 
       LoginRoute -> 
         div [] 
@@ -76,7 +81,7 @@ view model =
       ProfileRoute ->
         div [] 
           [ Header.view model
-          , ProfilePage.view
+          , Html.map ProfilePageMsg (ProfilePage.view model.profilePage)
           ]
 
       PhotoRoute id ->

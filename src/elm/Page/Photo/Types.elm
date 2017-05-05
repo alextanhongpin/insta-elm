@@ -1,12 +1,13 @@
-module Page.Photo.Types exposing (Comment, Model, model, Msg(Like, AddComment, CancelEdit, SubmitEdit, EditComment, DeleteComment, EditingComment, TypeComment))
+module Page.Photo.Types exposing (Comment, Model, model, Msg(Like, AddComment, CancelEdit, SubmitEdit, EditComment, DeleteComment, EditingComment, TypeComment, ResponseComments))
 
-import List
+
 -- MODEL
 
+
 type alias Comment = 
-    { id : String
+    { photoId : String
     , text : String
-    , displayName : String
+    , userId : String
     }
 
 -- Use photo recognition to prevent nude photos
@@ -16,23 +17,27 @@ type alias Model =
     , comment : String -- The comment to be posted
     , isEditing : Bool
     -- Use spam recognition to prevent spamming
+    , ghostID : String
     , ghostComment : Comment -- Temporary store the comment to be edited
     , errorEditTextEmpty : String -- Error display if the edit text is empty
+    , photoUrl : String
+    , photoID : String
+    , newComments : List(CommentID, Comment)
     }
 
 
 model : Model
 model = 
     { isLiked = False
-    , comments = 
-        [ Comment "1" "This is awesome!" "Baby.Doe"
-        , Comment "2" "Great shot!" "Big Fan"
-        , Comment "3" "Where was it?" "Tadaaa"
-        ]
+    , comments = []
     , comment = ""
     , isEditing = False
+    , ghostID = ""
     , ghostComment = Comment "" "" ""
     , errorEditTextEmpty = ""
+    , photoUrl = ""
+    , photoID = ""
+    , newComments = []
     }
 
 
@@ -42,15 +47,19 @@ model =
 type alias PhotoID 
     = String
 
+type alias CommentID
+    = String
+
 type Msg
     = Like
     | AddComment String
     | TypeComment String
     | DeleteComment Comment
-    | EditComment Comment -- Trigger edit
+    | EditComment CommentID Comment -- Trigger edit
     | EditingComment String -- Input value is changing
     | CancelEdit Comment 
     | SubmitEdit Comment
+    | ResponseComments (List(CommentID, Comment))
 
 
 

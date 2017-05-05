@@ -5,8 +5,9 @@ import Html exposing (Html, a, div, span, text)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 
-import Types exposing (Model, Route(LoginRoute, RegisterRoute, HomeRoute, ProfileRoute), Msg(NavigateTo, Logout))
-import Routing exposing (reverseRoute, onClickPreventDefault)
+import Types exposing (Model, Msg(NavigateTo, Logout))
+import Router.Main exposing (reverseRoute, onClickPreventDefault)
+import Router.Types exposing (Route(LoginRoute, RegisterRoute, HomeRoute, ProfileRoute))
 
 view : Model -> Html Msg
 view model = 
@@ -17,7 +18,8 @@ view model =
     else
       div [ class "header" ]
           [ brand model
-          , authorizedView model ] 
+          , authorizedView model
+          ]
 
 
 brand : Model -> Html Msg
