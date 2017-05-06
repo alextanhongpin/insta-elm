@@ -1,7 +1,23 @@
-port module Page.Photo.State exposing (update, createComment, requestComments, responseComments)
+port module Page.Photo.State exposing (..)
 
-import Page.Photo.Types exposing (Comment, Model, Msg(Like, CancelEdit, SubmitEdit, DeleteComment, EditComment, EditingComment, TypeComment, AddComment, ResponseComments))
+import Page.Photo.Types exposing (Model, Msg(..))
 
+
+-- PORT
+
+
+import Port.Photo as PhotoPort
+
+
+-- MODEL
+
+
+import Molecule.Comment.Port as CommentPort
+import Molecule.Comment.Model exposing (Comment, CommentID)
+import Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+
+
+-- UPDATE
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -9,114 +25,105 @@ update msg model =
         Like ->
             ({ model | isLiked = not model.isLiked }, Cmd.none)
 
-        TypeComment newComment->
-            ({ model | comment = newComment}, Cmd.none)
+        ResponsePhoto (photoID, photo) ->
+            ({ model | photo = photo, photoID = photoID }, Cmd.none)
 
-        AddComment comment ->
-            -- No comment
-            if comment
-                |> String.trim
-                |> String.isEmpty 
-            then
-                (model, Cmd.none)
-            else
-                let 
-                    newComment = 
-                        { photoId = model.photoID
-                        , text = (String.trim comment)
-                        , userId = ""
-                        }
-                in
-                    ({ model | comment = "" }, createComment newComment)
-                --let
-                --    -- Create a new record for comment
-                --    newComment = Comment "4" (String.trim comment) "UserName"
+        DeletePhoto photoID ->
+            (model, PhotoPort.deletePhoto photoID)
 
-                --    -- Add the comment to the front of the old list
-                --    newCommentList = newComment :: model.comments
-                --in 
-                --    ({ model 
-                --        | comments = newCommentList
-                --        , comment = "" }, Cmd.none)
+        DeletePhotoSuccess photoID ->
+            (model, Cmd.none)
 
-        DeleteComment comment -> 
-            let 
-                comments = List.filter (filterByID(comment.photoId)) model.comments
-            in
-                ({ model | comments = comments }, Cmd.none)
+        CommentAction childMsg ->
+            case childMsg of
+                Create text -> 
+                    if text
+                        |> String.trim
+                        |> String.isEmpty 
+                    then
+                        (model, Cmd.none)
+                    else
+                        let 
+                            newComment = 
+                                { photoId = model.photoID
+                                , text = (String.trim text)
+                                , userId = ""
+                                }
+                        in
+                            -- Clear the input field and request to POST /comments
+                            ({ model | comment = "" }, CommentPort.createComment newComment)
 
-        EditComment commentId comment -> 
-            ({ model 
-                | isEditing = True 
-                , ghostComment = comment
-                , ghostID = commentId
-            }, Cmd.none)
+                All comments ->
+                    let 
+                        concatComments = comments ++ model.comments
+                    in 
+                        ({ model | comments = concatComments }, Cmd.none)
 
-        CancelEdit comment -> 
-            ({ model 
-                | isEditing = False
-                , ghostComment = Comment "" "" ""
-            }, Cmd.none)
+                Update commentID comment ->
+                    if comment.text
+                        |> String.trim
+                        |> String.isEmpty
+                    then
+                        ({ model | errorEditTextEmpty = "Text cannot be empty" }, Cmd.none)
+                    else
+                        (model, CommentPort.updateComment (commentID, comment))
 
-        SubmitEdit comment ->
-            if comment.text
-                |> String.trim
-                |> String.isEmpty
-            then
-                ({ model | errorEditTextEmpty = "Text cannot be empty" }, Cmd.none)
-            else
-                let 
-                    update : Comment -> Comment
-                    update item = 
-                        if 
-                            item.photoId == comment.photoId
-                        then
-                            { item | text = comment.text }
-                        else
-                            item
-                    updatedComments = List.map update model.comments
-                in
-                ({ model
-                    | comments = updatedComments
-                    , ghostComment = Comment "" "" ""
-                    , isEditing = False
-                 }, Cmd.none)
+                UpdateCallback (commentID, comment) ->
+                    let
+                        update : (String, Comment) -> (String, Comment)
+                        update (cID, c) = 
+                            if 
+                                cID == commentID
+                            then
+                                (cID, { c | text = comment.text })
+                            else
+                                (cID, c)
+                        updatedComments = List.map update model.comments
+                    in
+                        ({ model
+                            | comments = updatedComments
+                            , ghostComment = Comment "" "" ""
+                            , ghostID = ""
+                            , isEditing = False
+                         }, Cmd.none)
 
-        EditingComment text ->
-            let 
-                ghostComment = model.ghostComment
-                u = { ghostComment | text = text }
-            in
-                ({ model 
-                    | ghostComment = u
-                    , errorEditTextEmpty = ""
-                }, Cmd.none)
+                Delete commentID comment ->
+                    (model, CommentPort.deleteComment (commentID, comment))
 
-        ResponseComments comments ->
-            let 
-                concatComments = comments ++ model.newComments
-            in 
-                ({ model | newComments = concatComments }, Cmd.none)
-        -- This is a capture all handler
-        --_ -> 
-        --    (model, Cmd.none)
+                DeleteCallback commentID ->
+                    let
+                        comments = List.filter (\(id, _) -> id /= commentID) model.comments
+                    in
+                        ({ model | comments = comments}, Cmd.none)
 
-filterByID : String -> Comment -> Bool
-filterByID id model =
-    -- Check if the values are equal
-    model.photoId /= id
+                InputComment newComment ->
+                    ({ model | comment = newComment}, Cmd.none)
+
+        CommentEditAction childMsg ->
+            case childMsg of 
+                Edit commentId comment -> 
+                    ({ model 
+                        | isEditing = True 
+                        , ghostComment = comment
+                        , ghostID = commentId
+                    }, Cmd.none)
+
+                Cancel comment ->
+                    ({ model 
+                        | isEditing = False
+                        , ghostComment = Comment "" "" ""
+                        , ghostID = ""
+                    }, Cmd.none)
+
+                InputEdit text ->
+                    let 
+                        ghostComment = model.ghostComment
+                        u = { ghostComment | text = text }
+                    in
+                        ({ model 
+                            | ghostComment = u
+                            , errorEditTextEmpty = ""
+                        }, Cmd.none)
 
 
--- PUB
-
-
-type alias PhotoId = String
-
-port requestComments : PhotoId -> Cmd msg
-port createComment :  Comment -> Cmd msg
-
--- SUB
-
-type alias CommentId = String
-port responseComments : (List (CommentId, Comment) -> msg) -> Sub msg
 

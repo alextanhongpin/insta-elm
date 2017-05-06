@@ -1,28 +1,29 @@
-module Page.Photo.Types exposing (Comment, Model, model, Msg(Like, AddComment, CancelEdit, SubmitEdit, EditComment, DeleteComment, EditingComment, TypeComment, ResponseComments))
+module Page.Photo.Types exposing (Model, model, Msg(..))
 
 
 -- MODEL
 
 
-type alias Comment = 
-    { photoId : String
-    , text : String
-    , userId : String
-    }
+import Molecule.Comment.Model exposing (Comment, CommentID)
+import Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+
+import Model.Photo exposing (Photo, PhotoID)
+
+
 
 -- Use photo recognition to prevent nude photos
 type alias Model = 
     { isLiked : Bool
-    , comments : List Comment -- The list of comments
+    , comments : List(CommentID, Comment) -- The list of comments
     , comment : String -- The comment to be posted
     , isEditing : Bool
     -- Use spam recognition to prevent spamming
     , ghostID : String
     , ghostComment : Comment -- Temporary store the comment to be edited
     , errorEditTextEmpty : String -- Error display if the edit text is empty
-    , photoUrl : String
     , photoID : String
-    , newComments : List(CommentID, Comment)
+    , userId : String
+    , photo : Photo
     }
 
 
@@ -35,31 +36,19 @@ model =
     , ghostID = ""
     , ghostComment = Comment "" "" ""
     , errorEditTextEmpty = ""
-    , photoUrl = ""
     , photoID = ""
-    , newComments = []
+    , userId = ""
+    , photo = Photo "" "" "" "" "" ""
     }
 
 
--- MSG
-
-
-type alias PhotoID 
-    = String
-
-type alias CommentID
-    = String
 
 type Msg
     = Like
-    | AddComment String
-    | TypeComment String
-    | DeleteComment Comment
-    | EditComment CommentID Comment -- Trigger edit
-    | EditingComment String -- Input value is changing
-    | CancelEdit Comment 
-    | SubmitEdit Comment
-    | ResponseComments (List(CommentID, Comment))
-
+    | ResponsePhoto (PhotoID, Photo)
+    | DeletePhoto String
+    | DeletePhotoSuccess String
+    | CommentAction CommentMsg
+    | CommentEditAction CommentEditMsg
 
 

@@ -2,7 +2,6 @@
 port module State exposing (..)
 
 -- import Types exposing (..)
-import Rest exposing (..)
 import Navigation exposing (Location)
 import Router.Main as Routing exposing (reverseRoute)
 import Router.Types exposing (Route(ProfileRoute, PhotoRoute, LoginRoute, RegisterRoute, HomeRoute))
@@ -20,6 +19,16 @@ import Page.Profile.State as ProfileState
 -- import Page.Register.Types as RegisterUnion
 import Page.Register.State as RegisterState
 
+
+-- PORT
+
+
+import Port.Profile as ProfilePort exposing (..)
+import Port.Photo as PhotoPort exposing (..)
+import Molecule.Comment.Port as CommentPort exposing (..)
+import Molecule.Comment.Types as CommentTypes exposing (CommentMsg(..))
+
+
 -- import Types exposing (Model, Msg(NavigateTo, LoginPageMsg))
 import Types exposing (..)
 
@@ -33,7 +42,7 @@ init location =
       Routing.parseLocation location
   in
     -- Initialize the model with the current route
-    (model currentRoute, Cmd.batch [ dispatchGreet "Initializing app", authenticate (), Cmd.none ])
+    (model currentRoute, authenticate ())
 
 
 -- UPDATE
@@ -42,25 +51,14 @@ init location =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp -> 
-      (model, Cmd.none)
+    --FireAPI (Ok newmeta) ->
+    --  ({ model | metadata = newmeta }, Cmd.none)
 
-    -- the setStorage is port that is responsible for sending a model to the index.html
-    OnChange a -> 
-      ({ model | comment = a }, Cmd.batch [ setStorage "Hello world", Cmd.none ] )
+    --FireAPI (Err _) -> 
+    --  (model, Cmd.none)
 
-    -- listen to the external port
-    OnStorageSet a ->
-      ({ model | fromPort = a }, Cmd.none)
-
-    FireAPI (Ok newmeta) ->
-      ({ model | metadata = newmeta }, Cmd.none)
-
-    FireAPI (Err _) -> 
-      (model, Cmd.none)
-
-    FetchService ->
-      (model, serviceAPI model.url )
+    --FetchService ->
+    --  (model, serviceAPI model.url )
 
     OnLocationChange location -> 
       let
@@ -69,8 +67,6 @@ update msg model =
       in
       ( { model | route = newRoute }, Cmd.none )
 
-    SubGetAccessToken token ->
-      ({ model | accessToken = token }, Cmd.none)
 
     Logout -> 
       --let 
@@ -143,14 +139,16 @@ update msg model =
 
     PhotoPageMsg childMsg ->
       case childMsg of
-        PhotoUnion.Like ->
+        PhotoUnion.DeletePhotoSuccess photoID ->
           let
-            ( photoModel, photoCmd ) = 
-             PhotoState.update childMsg model.photoPage
+            profilePageModel = model.profilePage
+            photos = profilePageModel.photos
+            filteredPhotos = List.filter (\(a, b) -> a /= photoID) photos
+            msg = NavigateTo ProfileRoute
+            updatedProfileModel = { profilePageModel | photos = filteredPhotos}
+            updatedModel = { model | profilePage = updatedProfileModel}
           in
-            ({ model | photoPage = photoModel }
-            , Cmd.map PhotoPageMsg photoCmd
-            )
+            update msg updatedModel
         _ ->
           let
             ( photoModel, photoCmd ) = 
@@ -173,34 +171,47 @@ update msg model =
 
     ProfilePageMsg childMsg ->
       case childMsg of
+        ProfileUnion.SetDisplayNameSuccess displayName -> 
+          let
+            ( profileModel, profileCmd ) = ProfileState.update childMsg model.profilePage
+            userModel = model.user
+            
+          in
+            let 
+              updatedUserModel = { userModel | displayName = displayName }
+            in
+              ({ model | profilePage = profileModel, user = updatedUserModel }
+              , Cmd.map ProfilePageMsg profileCmd
+              )
+
         ProfileUnion.NavigateTo photoId ->
           let
             newMsg = NavigateTo (PhotoRoute photoId)
             -- Get the first photo
-            photos = List.filter (\(id, _) -> id == photoId ) model.profilePage.photos
-            photoPageModel = model.photoPage
+            --photos = List.filter (\(id, _) -> id == photoId ) model.profilePage.photos
+            --photoPageModel = model.photoPage
           in
-            case List.head photos of
-              Just p -> 
-                let
-                  photoUrl
-                    = p
-                    |> Tuple.second
-                    |> .photoUrl
-                  photoID
-                    = p
-                    |> Tuple.first
-                  updatedPhotoPageModel 
-                    = { photoPageModel 
-                      | photoUrl = photoUrl
-                      , photoID = photoID }
-                  newModel = { model | photoPage = updatedPhotoPageModel }
-                in 
-                  update newMsg newModel
+            --case List.head photos of
+            --  Just p -> 
+            --    let
+            --      photoUrl
+            --        = p
+            --        |> Tuple.second
+            --        |> .photoUrl
+            --      photoID
+            --        = p
+            --        |> Tuple.first
+            --      updatedPhotoPageModel 
+            --        = { photoPageModel 
+            --          | photoUrl = photoUrl
+            --          , photoID = photoID }
+            --      newModel = { model | photoPage = updatedPhotoPageModel }
+            --    in 
+            update newMsg model
 
-              Nothing ->
-                -- Not found
-                update (NavigateTo ProfileRoute) model
+              --Nothing ->
+              --  -- Not found
+              --  update (NavigateTo ProfileRoute) model
 
             
         _ -> 
@@ -214,6 +225,7 @@ update msg model =
 
     NavigateTo route ->
       case route of
+
         ProfileRoute ->
           if
             model.route == route && not (List.isEmpty model.profilePage.photos)
@@ -221,22 +233,19 @@ update msg model =
             (model, Cmd.none)
           else
             -- Request new photos when the user enter the page
-            (model, Cmd.batch [ ProfileState.requestPhotos (), Navigation.newUrl (reverseRoute route)] )
+            (model, Cmd.batch [ ProfileState.requestPhotos (), photoCount (), Navigation.newUrl (reverseRoute route)] )
+
         PhotoRoute photoId ->
           let
             pageModel = model.photoPage
             -- Reset model when entering the page
-            newPageModel = { pageModel | newComments = [] }
+            newPageModel = { pageModel | comments = [] }
           in
-            ({ model | photoPage = newPageModel }, Cmd.batch [ PhotoState.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
+            ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
         _ ->
         -- Reset the state when go to a new page
         --  ({ model | photoPage = PhotoUnion.model }, Navigation.newUrl (reverseRoute route))
           (model, Navigation.newUrl (reverseRoute route))
-
-    -- Example of using a dispatcher
-    Greet str -> 
-      ({ model | greet = str }, Cmd.none)
 
     Authenticate str -> 
       ({ model | greet = str}, Cmd.none)
@@ -245,20 +254,26 @@ update msg model =
     AuthenticateSuccess user ->
       -- Redirect the user after logging in
       let
-        msg = NavigateTo ProfileRoute
+        -- msg = NavigateTo ProfileRoute
+        msg = NavigateTo model.route
         profilePageModel = model.profilePage
+        photoPageModel = model.photoPage
         updatedProfilePageModel = 
           { profilePageModel 
             | displayName = user.displayName
             , email = user.email
             , emailVerified = user.emailVerified
             , photoURL = user.photoURL 
+            , uid = user.uid
           }
+        updatedPhotoPageModel =
+          { photoPageModel | userId = user.uid }
         updatedModel = 
           { model
             | user = user
             , isAuthorized = True
             , profilePage = updatedProfilePageModel
+            , photoPage = updatedPhotoPageModel
           }
       in
         update msg updatedModel
@@ -277,15 +292,13 @@ update msg model =
 -- Pub
 
 
-port setStorage : String -> Cmd msg
-port dispatchGreet : String -> Cmd msg
 port authenticate : () -> Cmd msg
 port signOut : () -> Cmd msg
+
+
 -- Sub
 
 
-port onStorageSet : (String -> msg) -> Sub msg
-port subscribeGreet : (String -> msg) -> Sub msg
 port authenticateSuccess : (LoginUnion.User -> msg) -> Sub msg
 port onAuthenticateStateChange : (String -> msg) -> Sub msg
 
@@ -297,9 +310,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   -- Sub.none
   Sub.batch
-    [ onStorageSet OnStorageSet
-    , subscribeGreet Greet
-    , onAuthenticateStateChange Authenticate
+    [ onAuthenticateStateChange Authenticate
     , RegisterState.onRegistered RegisterCallback 
     , logoutSuccess LogoutSuccess
     , authenticateSuccess AuthenticateSuccess
@@ -307,8 +318,35 @@ subscriptions model =
       We map the Child subscription to the childMsg first
       which will be the parameters for loginPageMsg
     --}
+    
+
+    -- Login Page
+
+
     , Sub.map LoginPageMsg (LoginState.loginSuccess LoginUnion.LoginSuccess)
     , Sub.map LoginPageMsg (LoginState.loginError LoginUnion.LoginError)
+    
+
+    -- ProfilePage
+
+
     , Sub.map ProfilePageMsg (ProfileState.responsePhotos ProfileUnion.ResponsePhotos)
-    , Sub.map PhotoPageMsg (PhotoState.responseComments PhotoUnion.ResponseComments)
+    , Sub.map ProfilePageMsg (ProfileState.profilePhotoSuccess ProfileUnion.ProfilePhotoSuccess)
+    , Sub.map ProfilePageMsg (ProfileState.progress ProfileUnion.Progress)
+    , Sub.map ProfilePageMsg (ProfileState.uploadProgress ProfileUnion.UploadProgress)
+    , Sub.map ProfilePageMsg (setDisplayNameSuccess ProfileUnion.SetDisplayNameSuccess)
+    , Sub.map ProfilePageMsg (PhotoPort.photoCountSuccess ProfileUnion.PhotoCountSuccess)
+    
+
+    -- PhotoPage
+
+
+    , Sub.map PhotoPageMsg (PhotoPort.responsePhoto PhotoUnion.ResponsePhoto)
+    , Sub.map PhotoPageMsg (PhotoPort.deletePhotoSuccess PhotoUnion.DeletePhotoSuccess)
+    , Sub.map PhotoPageMsg (CommentPort.responseComments (PhotoUnion.CommentAction << CommentTypes.All))
+    , Sub.map PhotoPageMsg (CommentPort.deleteCommentSuccess (PhotoUnion.CommentAction << CommentTypes.DeleteCallback))
+    , Sub.map PhotoPageMsg (CommentPort.updateCommentSuccess (PhotoUnion.CommentAction << CommentTypes.UpdateCallback))
     ]
+
+
+

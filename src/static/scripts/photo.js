@@ -2,6 +2,7 @@
 
 class Photo {
   constructor (firebase, userId, dispatcher) {
+    this.firebase = firebase
     this.ref = firebase.database().ref('photos')
     this.storage = firebase.storage().ref()
     this.userId = userId
@@ -19,41 +20,74 @@ class Photo {
       // }
     // })
   }
-  create (photoUrl) {
+  count (photoId) {
+    return this.ref.orderByChild('userId').equalTo(this.userId).once('value')
+    .then(function (snapshot) {
+      return snapshot.numChildren()
+    })
+  }
+  create (photoUrl, displayName, alt) {
     var newRef = this.ref.push()
-    var payload = { userId: this.userId, photoUrl: photoUrl }
+    var payload = {
+      userId: this.userId,
+      photoUrl: photoUrl,
+      displayName: displayName,
+      alt: alt,
+      createdAt: new Date().toString(),
+      updatedAt: new Date().toString()
+    }
     newRef.set(payload)
     this.dispatcher.responsePhotos.send([
       [newRef.key, payload]
     ])
   }
   createMany () {}
-  getOne () {
-
-      // starCountRef.on('value', function(snapshot) {
-      //   updateStarCount(postElement, snapshot.val());
-      // })
-  }
-  getByUserId () {
-      console.log('getByUserId')
-      return this.ref.orderByChild('userId').equalTo(this.userId).once('value').then(function (snapshot) {
-        var result = []
-        snapshot.forEach(function (child) {
-          var key = child.key
-          var data = child.val()
-          result.push([ key, data ])
-        })
-        return result
+  one (photoID) {
+    const ref = this.firebase.database().ref('photos/' + photoID)
+    return ref.once('value').then(function (snapshot) {
+      var result = {
+        photoUrl: '',
+        userId: '',
+        displayName: '',
+        alt: '',
+        createdAt: '',
+        updatedAt: ''
+      }
+      snapshot.forEach(function (child) {
+        var key = child.key
+        var data = child.val()
+        result[key] = data
       })
+      return [photoID, result]
+    })
+  }
+  all () {
+    return this.ref.orderByChild('userId').equalTo(this.userId).once('value').then(function (snapshot) {
+      var result = []
+      snapshot.forEach(function (child) {
+        var key = child.key
+        var data = child.val()
+
+        var record = {
+          photoUrl: data.photoUrl || '',
+          userId: data.userId || '',
+          displayName: data.displayName || '',
+          alt: data.alt || '',
+          createdAt: data.createdAt || '',
+          updatedAt: data.updatedAt || ''
+        }
+        result.push([ key, record ])
+      })
+      return result
+    })
   }
   getAll () {
-      this.ref.once('value').then(function (snapshot) {
-        snapshot.forEach(function (child) {
-          var key = child.key
-          var data = child.val()
-          console.log(key, data)
-        })
+    this.ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (child) {
+        var key = child.key
+        var data = child.val()
       })
+    })
   //    var userId = firebase.auth().currentUser.uid;
   // return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
   //   var username = snapshot.val().username;
@@ -68,14 +102,44 @@ class Photo {
       // })
   }
   updateAll () {}
-  deleteOne () {
+  delete (photoID) {
       // firebase.database().ref(photosBaseRef + userId).remove()
-  }
-  deleteAll () {}
+    // Delete the photo and the corresponding comments
+    const photo = this.firebase.database().ref('photos/' + photoID)// .once('value')
+    const comments = this.firebase.database().ref('comments')// .once('value')
+    // return photo.remove().then(function (data) {
+    //   console.log('photo successfully removed', data)
+    //   return comments.once('value')
+    // }).then(function (snapshot) {
+    //   var updates = {}
+    //   snapshot.forEach(function (child) {
+    //     updates[child.key] = null
+    //   })
+    //   return comments.update(updates)
+    // })
 
-  uploadPhoto (id) {
+    // console.log('delete function photoID', photoID)
+    // return photo.on('child_added').then(function (snapshot) {
+    //   console.log('s1', snapshot)
+    //   snapshot.ref.remove()
+    //   return comments.on('child_added').then(function (snapshot) {
+    //     console.log('s2', snapshot)
+    //     return snapshot.ref.remove()
+    //   })
+    // })
+    return photo.remove().then(function (s1) {
+      return comments.orderByChild('photoId').equalTo(photoID).once('value').then(function (snapshot) {
+        var updates = {}
+        snapshot.forEach(function (child) {
+          updates[child.key] = null
+        })
+        return comments.update(updates)
+      })
+    })
+  }
+
+  uploadPhoto (id, displayName, alt) {
     var self = this
-    console.log('id of element to be targetted', id)
     var node = document.getElementById(id)
     if (!node) {
       return
@@ -91,6 +155,7 @@ class Photo {
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
       console.log('Upload is ' + progress + '% done')
+      self.dispatcher.uploadProgress.send(progress)
       switch (snapshot.state) {
         case firebase.storage.TaskState.PAUSED: // or 'paused'
           console.log('Upload is paused')
@@ -119,7 +184,7 @@ class Photo {
     // Upload completed successfully, now we can get the download URL
       var downloadURL = uploadTask.snapshot.downloadURL
       console.log('successfully saved file with the following url', downloadURL)
-      self.create(downloadURL)
+      self.create(downloadURL, displayName, alt)
     })
   }
 }

@@ -6,17 +6,15 @@
 module View exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href)
-import Html.Events exposing ( onClick, onWithOptions )
 import Types exposing (..)
 
 import Atom.Header.View as Header exposing (view)
 
 import Router.Types exposing (..)
+
+
 -- MOLECULES
 
-
-import Molecule.Card exposing ( card )
 
 
 -- PAGE
@@ -37,23 +35,23 @@ import Page.Register.View as RegisterPage
 view : Model -> Html Msg
 view model =
   case model.route of
-      PlayersRoute ->
-        div [ ] [
-          div [] [ text "This is /players route" ],
-          a [ href "#players/1"] [ text "Go to player 1 page" ]
-        ]
+      --PlayersRoute ->
+      --  div [ ] [
+      --    div [] [ text "This is /players route" ],
+      --    a [ href "#players/1"] [ text "Go to player 1 page" ]
+      --  ]
 
-      PlayerRoute id ->
-        div [ ] [
-          div [] [ text "This is the player" ],
-          button [ onClick FetchService ] [ text "Fetch service" ],
-          div [ ] [ text model.metadata.title ],
-          div [ ] [ text model.metadata.body ],
-          div [ ] [ text (toString(model.metadata.id)) ],
-          div [ ] [ text (toString(model.metadata.userId)) ],
-          div [ ] [ text ("This is the access token:" ++ model.accessToken) ], 
-          card model
-        ]
+      --PlayerRoute id ->
+      --  div [ ] [
+      --    div [] [ text "This is the player" ],
+      --    button [ onClick FetchService ] [ text "Fetch service" ],
+      --    div [ ] [ text model.metadata.title ],
+      --    div [ ] [ text model.metadata.body ],
+      --    div [ ] [ text (toString(model.metadata.id)) ],
+      --    div [ ] [ text (toString(model.metadata.userId)) ],
+      --    div [ ] [ text ("This is the access token:" ++ model.accessToken) ], 
+      --    card model
+      --  ]
 
       RegisterRoute -> 
         let 

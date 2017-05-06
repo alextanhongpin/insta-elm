@@ -1,13 +1,42 @@
+.page-photo {
+	// text-align: center;
+	max-width: $grid-max;
+	margin: auto;
+}
 .photo-grid {
-	height: 320px;
 	width: 100%;
+	max-width: $grid-max;
 	background: $background-primary;
+	height: auto;
+	display: inline-block;
 }
 .icon-favorite.is-selected {
 	color: red;
 }
 
-.comment-list {
+// Comments contains a list of comment
+.comments {
+	max-width: $grid-max;
+	width: 100%;
+	margin: auto;
+	text-align: left;
+}
+
+// Comment
+.comment {
 	padding: 10px 0;
 	border: 1px solid silver;
 }
+
+// user is the class for the owner of the image
+.user {
+	@extend %flex;
+}
+.user-photo.is-small {
+	height: 40px;
+	width: 40px;
+}
+.user-info {}
+
+.user-info__date {}
+.user-info__name {}

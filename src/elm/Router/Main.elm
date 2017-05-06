@@ -13,8 +13,8 @@ matchers : Parser (Route -> a) a
 matchers = 
   oneOf
     [ map HomeRoute top
-    , map PlayerRoute (s "players" </> string)
-    , map PlayersRoute (s "players")
+    --, map PlayerRoute (s "players" </> string)
+    --, map PlayersRoute (s "players")
     , map LoginRoute (s "login")
     , map RegisterRoute (s "register")
     , map HomeRoute (s "home")
@@ -40,11 +40,11 @@ reverseRoute route =
     HomeRoute ->
       "/"
 
-    PlayerRoute id ->
-      "/players/" ++ id
+    --PlayerRoute id ->
+    --  "/players/" ++ id
 
-    PlayersRoute -> 
-      "/players"
+    --PlayersRoute -> 
+    --  "/players"
 
     LoginRoute ->
       "/login"

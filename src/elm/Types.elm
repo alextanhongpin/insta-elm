@@ -1,9 +1,9 @@
 -- Contains Model and Msg, and Route
 module Types exposing (..)
 
-import Http
+--import Http
 import Navigation exposing (Location)
-import RemoteData exposing (WebData)
+--import RemoteData exposing (WebData)
 import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
 import Page.Register.Types as RegisterTypes
@@ -65,17 +65,13 @@ model route =
 
 
 type Msg 
-  = NoOp 
-  | OnChange String 
-  | OnStorageSet String 
-  | FireAPI (Result Http.Error Metadata) 
-  | FetchService
-  | OnLocationChange Location
-  | SubGetAccessToken String
+  -- = NoOp 
+  -- | FireAPI (Result Http.Error Metadata) 
+  -- | FetchService
+  = OnLocationChange Location
   | NavigateTo Route
   | Logout -- Log the user out
   | LogoutSuccess String
-  | Greet String
   | Authenticate String
   | AuthenticateSuccess LoginTypes.User
   | RegisterCallback String
@@ -84,14 +80,3 @@ type Msg
   | PhotoPageMsg PhotoTypes.Msg -- Photo msg
   | RegisterPageMsg RegisterTypes.Msg
   | ProfilePageMsg ProfileTypes.Msg
-
-
---type Route
---  = PlayersRoute -- the route for players
---  | PlayerRoute PlayerId
---  | LoginRoute
---  | RegisterRoute
---  | HomeRoute
---  | NotFoundRoute
---  | ProfileRoute
---  | PhotoRoute PhotoId

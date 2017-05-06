@@ -7,9 +7,9 @@ type alias PhotoID =
   String
 
 type Route
-  = PlayersRoute -- the route for players
-  | PlayerRoute PlayerID
-  | LoginRoute
+  --= PlayersRoute -- the route for players
+  --| PlayerRoute PlayerID
+  = LoginRoute
   | RegisterRoute
   | HomeRoute
   | NotFoundRoute

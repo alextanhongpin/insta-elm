@@ -38,4 +38,14 @@ class Comment {
       return result
     })
   }
+
+  delete (commentId, comment) {
+    const ref = firebase.database().ref('comments/' + commentId)
+    return ref.remove()
+  }
+
+  update (commentId, comment) {
+    const ref = firebase.database().ref('comments/' + commentId)
+    return ref.set(comment)
+  }
 }
