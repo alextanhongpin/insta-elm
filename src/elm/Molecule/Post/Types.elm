@@ -1,10 +1,10 @@
-module Molecule.Topic.Types exposing (..)
+module Molecule.Post.Types exposing (..)
 
 
 -- MODEL
 
 
-type alias Topic =
+type alias Post =
     { photoUrl : String
     , userId : String
     , displayName : String
@@ -15,7 +15,7 @@ type alias Topic =
     }
 
 
-type alias TopicID = String
+type alias PostID = String
 
 
 -- MSG

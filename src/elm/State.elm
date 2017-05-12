@@ -18,7 +18,9 @@ import Page.Photo.State as PhotoState
 import Page.Profile.State as ProfileState
 import Page.Register.State as RegisterState
 import Page.Topic.State as TopicState
+-- import Page.Topics.State as TopicsState
 import Page.Feed.State as FeedState
+import Page.Post.State as PostState
 
 
 -- Types
@@ -28,6 +30,9 @@ import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
 import Page.Profile.Types as ProfileTypes
 import Page.Feed.Types as FeedTypes
+import Page.Topic.Types as TopicTypes
+import Page.Topics.Types as TopicsTypes
+-- import Page.Post.Types as PostTypes
 
 
 -- PORT
@@ -167,8 +172,15 @@ update msg model =
             , Cmd.map FeedPageMsg feedCmd
             )
 
+    -- GET /topics/:id
     TopicPageMsg childMsg ->
       case childMsg of
+        TopicTypes.GoTo topic id ->
+          let 
+            msg = NavigateTo (PostRoute topic id)
+          in
+            update msg model
+
         _ -> 
           let
             ( topicModel, topicCmd ) = 
@@ -176,6 +188,32 @@ update msg model =
           in
             ({ model | topicPage = topicModel }
             , Cmd.map TopicPageMsg topicCmd
+            )
+
+    TopicsPageMsg childMsg ->
+      case childMsg of
+        TopicsTypes.GoToTopic topic ->
+          let
+            msg = NavigateTo (TopicRoute topic)
+          in
+            update msg model
+        --_ -> 
+        --  let
+        --    ( topicsModel, topicsCmd ) = 
+        --     TopicsState.update childMsg model.topicsPage
+        --  in
+        --    ({ model | topicsPage = topicsModel }
+        --    , Cmd.map TopicsPageMsg topicsCmd
+        --    )
+    PostPageMsg childMsg ->
+      case childMsg of
+        _ -> 
+          let
+            ( childModel, childCmd ) = 
+             PostState.update childMsg model.postPage
+          in
+            ({ model | postPage = childModel }
+            , Cmd.map PostPageMsg childCmd
             )
 
     ProfilePageMsg childMsg ->
@@ -208,6 +246,10 @@ update msg model =
             , Cmd.map ProfilePageMsg profileCmd
             )
 
+
+    -- NAVIGATION
+
+
     NavigateTo route ->
       case route of
         FeedRoute ->
@@ -229,6 +271,12 @@ update msg model =
             newPageModel = { pageModel | comments = [] }
           in
             ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
+        TopicRoute topic ->
+          let
+            pageModel = model.topicPage
+            newPageModel = { pageModel | topic = topic }
+          in
+            ({ model | topicPage = newPageModel }, Navigation.newUrl (reverseRoute route))
         _ ->
         -- Reset the state when go to a new page
           (model, Navigation.newUrl (reverseRoute route))
@@ -270,4 +318,12 @@ update msg model =
         output = { registerPage | error = "YESS" }
       in
         ({model | registerPage = output }, Cmd.none)
+
+
+    OnMouseClick position ->
+      ({ model | position = position }, Cmd.none)
+
+
+
+
 

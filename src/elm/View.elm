@@ -28,6 +28,8 @@ import Page.Feed.View as FeedPage
 import Page.Register.View as RegisterPage
 import Page.Topic.View as TopicPage
 import Page.Topics.View as TopicsPage
+import Page.Posts.View as PostsPage
+import Page.Post.View as PostPage
 
 -- VIEW
 
@@ -104,13 +106,25 @@ view model =
       TopicsRoute ->
         div []
           [ Header.view model
-          , TopicsPage.view
+          , Html.map TopicsPageMsg (TopicsPage.view model.topicsPage)
           ]
 
       TopicRoute id ->
         div []
           [ Header.view model
           , Html.map TopicPageMsg (TopicPage.view model.topicPage)
+          ]
+
+      PostsRoute ->
+        div []
+          [ Header.view model
+          , PostsPage.view
+          ]
+
+      PostRoute topicID postID ->
+        div []
+          [ Header.view model
+          , Html.map PostPageMsg (PostPage.view model.postPage) 
           ]
 
       NotFoundRoute ->

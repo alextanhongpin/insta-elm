@@ -8,3 +8,5 @@ update msg model =
     case msg of 
         Nth ->
             (model, Cmd.none)
+        GoTo topic id ->
+            (model, Cmd.none)

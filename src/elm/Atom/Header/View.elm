@@ -3,13 +3,15 @@ module Atom.Header.View exposing (view)
 
 import Html exposing (Html, a, div, span, i, text)
 import Html.Attributes exposing (class, href)
-import Html.Events exposing (onClick)
+import Html.Events exposing (on, onClick)
 
-import Types exposing (Model, Msg(NavigateTo, Logout))
+import Types exposing (Model, Msg(..))
 import Router.Main exposing (reverseRoute, onClickPreventDefault)
 import Router.Types exposing (Route(..))
 
 import Atom.Icon.View as Icon exposing (view)
+
+import Mouse exposing (..)
 
 view : Model -> Html Msg
 view model = 
@@ -33,6 +35,7 @@ view model =
                 [ text "Topics" ] 
               ]
           , div [ class "logout", onClick Logout ] [ text "Logout" ] 
+          , div [] [ text (toString model.position.x ++ "," ++toString model.position.y) ]
           ]
     else
       div [ class "header" ]

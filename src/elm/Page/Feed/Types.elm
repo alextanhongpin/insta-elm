@@ -1,4 +1,4 @@
-module Page.Feed.Types exposing (..)
+module Page.Feed.Types exposing (Model, model, Msg(..))
 
 
 import Molecule.Photo.Types exposing (PhotoID, Photo, PhotoMsg(..))

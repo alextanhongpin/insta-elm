@@ -24,6 +24,7 @@ $background-primary: $alabaster;
 $grid-max: 640px;
 
 
+$dimension-50: 5px;
 $dimension-100: 10px;
 $dimension-200: 20px;
 $dimension-300: 30px;
@@ -33,6 +34,13 @@ $dimension-300: 30px;
 	width: 100%;
 	height: $dimension-100;
 }
+
+.br.br-50 {
+	display: block;
+	width: 100%;
+	height: $dimension-50;
+}
+
 .br.br-200 {
 	height: $dimension-200;
 }

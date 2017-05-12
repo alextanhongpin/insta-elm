@@ -5,7 +5,7 @@ port module Port exposing (..)
 
 import Types exposing (..)
 
-
+import Mouse exposing (..)
 -- MOLECULE
 
 
@@ -103,6 +103,6 @@ subscriptions model =
 
 
     , Sub.map FeedPageMsg (PhotoPort.responsePublicPhotos (FeedTypes.PhotoAction << MPhotoTypes.PublicAll))
-
+    , Mouse.clicks (\a -> OnMouseClick a)
     ]
 

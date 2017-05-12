@@ -100,6 +100,58 @@ send =
 ```
 
 
+## KeyDown Listener (For Enter key)
+
+```elm
+import Html exposing (text, div, input, Attribute)
+import Html exposing (beginnerProgram)
+import Html.Events exposing (on, keyCode, onInput)
+import Json.Decode as Json
+
+
+main =
+  beginnerProgram 
+  { model = 
+    { savedText = ""
+    , currentText = ""
+    }
+  , view = view
+  , update = update
+  }
+
+
+view model =
+  div [] 
+  [ input [onKeyDown KeyDown, onInput Input] []
+  , div [] [ text ("Input: " ++ model.savedText) ]
+  ]
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+  on "keydown" (Json.map tagger keyCode)
+
+type Msg 
+  = NoOp
+  | KeyDown Int
+  | Input String
+
+
+update msg model =
+  case msg of
+
+    NoOp ->
+      model
+
+    KeyDown key ->
+      if key == 13 then
+        { model | savedText = model.currentText }
+      else
+        model
+
+    Input text ->
+      { model | currentText = text }
+```
+
 ## Routing without the Hash
 
 To be completed...

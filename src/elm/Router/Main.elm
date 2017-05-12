@@ -23,6 +23,8 @@ matchers =
     , map FeedRoute (s "feeds")
     , map TopicsRoute (s "topics")
     , map TopicRoute (s "topics" </> string)
+    , map PostsRoute (s "posts")
+    , map PostRoute (s "topics" </> string </> string)
     ]
 
 parseLocation : Location -> Route
@@ -69,6 +71,12 @@ reverseRoute route =
 
     TopicRoute id ->
       "/topics/" ++ id
+
+    PostsRoute ->
+      "/posts"
+
+    PostRoute topicID postID ->
+      "/topics/" ++ topicID ++ "/" ++ postID
 
     NotFoundRoute ->
       "/404"

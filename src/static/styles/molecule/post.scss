@@ -1,0 +1,36 @@
+.post {
+	text-align: left;
+}
+.post-item {
+	@extend %flex;
+	padding: 0 $dimension-100;
+}
+
+.post-item__image {
+	height: 80px;
+	width: 80px;
+	background: silver;
+}
+
+.post-item__content {
+	@extend %flex;
+	flex-wrap: wrap;
+	padding: 0 $dimension-100;
+	align-items: center;
+}
+
+.post-item__content-header {
+	@extend %no-link;
+	font-weight: bold;
+	font-size: 16px;
+	width: 100%;
+}
+.post-item__content-body {
+	font-size: 12px;
+	color: $gray;
+	width: 100%;
+}
+.post-item__content-footer {
+	font-size: 14px;
+	width: 100%;
+}

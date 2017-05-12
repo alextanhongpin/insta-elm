@@ -1,0 +1,182 @@
+.page-post {
+	text-align: center;
+	
+	.container {
+		text-align: left;
+	}
+
+	.post {
+		background: rgba($alto, .5);
+		padding: $dimension-200;
+	}
+
+	.post-header {
+		font-size: 20px;
+		font-weight: bold;
+	}
+
+	.post-body {
+		background: rgba(yellow, .5);
+		display: inline;
+		line-height: 1.25em;
+		white-space: pre-wrap;
+	}
+
+	.post-footer {
+		font-size: 14px;
+		color: $gray;
+	}
+
+	// ComentForm
+
+	.comment-form {
+		@extend %flex;
+		width: 100%;
+		padding: $dimension-100;
+		border: $border-primary;
+		background: rgba($alto, .25);
+	}
+
+	.comment-form__input {
+		width: 100%;
+	}
+	
+	// CommentForm:Left
+	.comment-form__left {
+		max-width: 40px;
+		width: 100%;
+	}
+	
+	// CommentForm:Right
+	.comment-form__right {
+		max-width: calc(100% - 40px);
+		width: 100%;
+	}
+
+	.comment-form__input {
+		height: 30px;
+		font-size: 14px;
+		outline: none;
+		padding: 0 5px;
+	}
+
+	.comment-form__userphoto {
+		width: 30px;
+		height: 30px;
+		background: $alto;
+	}
+
+	.small {
+		font-size: 12px;
+		color: $gray;
+	}
+
+
+	// Comment
+
+	$comment-left-width: 40px;
+	.comment {
+		@extend %flex;
+		border: $border-primary;
+		border-bottom: none;
+		padding: 10px;
+	}
+
+	.comment-prev {
+		text-align: center;
+		padding: $dimension-100;
+		border: $border-primary;
+		border-bottom: none;
+		background: rgba($alto, .25);
+		font-size: 12px;
+		color: $dodger-blue;
+		cursor: pointer;
+	}
+	.comment-prev:hover {
+		text-decoration: underline;
+	}
+	.comment-username {
+		color: $dodger-blue;
+		font-weight: 500;
+	}
+
+	.comment-left {
+		width: 100%;
+		max-width: $comment-left-width;
+	}
+	.comment-right {
+		width: 100%;
+		max-width: calc(100% - #{$comment-left-width});
+		@extend %flex;
+	}
+
+	$comment-nested-width: 40px;
+	.comment-nested-left {
+		width: 100%;
+		max-width: calc(100% - #{$comment-nested-width})
+	}
+	
+	.comment-nested-right {
+		width: 100%;
+		max-width: $comment-nested-width;
+		text-align: right;
+		position: relative;
+	}
+
+	.comment-photo {
+		height: 30px;
+		width: 30px;
+		background: $alto;
+	}
+
+	.comment-body {
+		font-size: 14px;
+	}
+
+	.comment-footer {
+		font-size: 12px;
+		color: $gray;
+	}
+
+	.comment-icon--edit {
+		width: 30px;
+		height: 30px;
+		text-align: center;
+		line-height: 30px;
+		cursor: pointer;
+		color: $gray;
+	}
+
+	.comment-icon--edit:hover {
+		background: $alto;
+	}
+
+	// The menu that pops up when user clicks the vertical dots
+	.comment-menu {
+		position: absolute;
+		top: 0;
+		right: 0;
+		border: $border-primary;
+
+		// Avoid transparency
+		background: white;
+
+		// Ensure it does not overlap with other elements
+		z-index: 500;
+
+		// Hand pointer
+		cursor: pointer;
+		padding: $dimension-50 0;
+	}
+	.content-menu__item {
+		padding: $dimension-50 $dimension-200;
+	}
+	.content-menu__item:hover {
+		background: rgba($alto, .5);
+	}
+
+	.comment-input-edit {
+		width: 100%;
+	}
+
+}

@@ -18,6 +18,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 
 // Molecules
 @import './molecule/card.scss';
+@import './molecule/post.scss';
 
 
 // Pages
@@ -27,9 +28,15 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import './page/profile.scss';
 @import './page/photo.scss';
 @import './page/feed.scss';
+@import './page/topic.scss';
+@import './page/topics.scss';
+@import './page/post.scss';
 
 
-body {
+body, input, textarea {
 	font-family: Helvetica, Arial;
-	//background: $background-primary;
+}
+
+b {
+	font-weight: bold;
 }
