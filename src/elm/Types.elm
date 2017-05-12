@@ -1,15 +1,17 @@
 -- Contains Model and Msg, and Route
 module Types exposing (..)
 
---import Http
 import Navigation exposing (Location)
---import RemoteData exposing (WebData)
 import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
 import Page.Register.Types as RegisterTypes
 import Page.Profile.Types as ProfileTypes
+import Page.Topic.Types as TopicTypes
+import Page.Feed.Types as FeedTypes
 
 import Router.Types exposing (Route)
+
+
 -- Model
 
 
@@ -28,7 +30,11 @@ type alias Model =
   , photoPage : PhotoTypes.Model
   , registerPage : RegisterTypes.Model
   , profilePage : ProfileTypes.Model
+  , topicPage: TopicTypes.Model
+  , feedPage: FeedTypes.Model
+  
   -- Auth Model
+
   , isAuthorized : Bool
   , user : LoginTypes.User
   }
@@ -50,10 +56,18 @@ model route =
   , metadata = Metadata 0 0 "" ""
   , route = route
   , accessToken = ""
+  
+  -- Page Model
+
   , loginPage = LoginTypes.model
   , photoPage = PhotoTypes.model
   , registerPage = RegisterTypes.model
   , profilePage = ProfileTypes.model
+  , topicPage = TopicTypes.model
+  , feedPage = FeedTypes.model
+
+  -- Auth
+
   , isAuthorized = False
   , greet = ""
   , user = LoginTypes.User "" "" False "" False ""
@@ -80,3 +94,5 @@ type Msg
   | PhotoPageMsg PhotoTypes.Msg -- Photo msg
   | RegisterPageMsg RegisterTypes.Msg
   | ProfilePageMsg ProfileTypes.Msg
+  | TopicPageMsg TopicTypes.Msg
+  | FeedPageMsg FeedTypes.Msg

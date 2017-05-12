@@ -1,24 +1,13 @@
-// photos.js contains the crud logic for firebase photos resources
+// Topic.js contains the crud logic for firebase topic resources
 
-class Photo {
+class Topic {
   constructor (firebase, userId, dispatcher) {
     this.firebase = firebase
-    this.ref = firebase.database().ref('photos')
+    this.url = 'topics'
+    this.ref = firebase.database().ref(this.url)
     this.storage = firebase.storage().ref()
     this.userId = userId
     this.dispatcher = dispatcher
-
-    // this.ref.on('child_added', function (data) {
-    //    console.log('child added')
-      // console.log(data.key, data.val())
-      // var key = data.key
-      // var obj = data.val()
-
-      // // Only add if the user id matches
-      // if (obj.userId === this.userId) {
-
-      // }
-    // })
   }
   count (photoId) {
     return this.ref.orderByChild('userId').equalTo(this.userId).once('value')
@@ -26,27 +15,29 @@ class Photo {
       return snapshot.numChildren()
     })
   }
-  create (photoUrl, displayName, alt) {
+  create (photoUrl, displayName, alt, content) {
     var newRef = this.ref.push()
     var payload = {
       userId: this.userId,
       photoUrl: photoUrl,
       displayName: displayName,
       alt: alt,
+      content: content,
       createdAt: new Date().toString(),
       updatedAt: new Date().toString()
     }
     newRef.set(payload)
-    this.dispatcher.responsePhotos.send([
-      [newRef.key, payload]
-    ])
+    // this.dispatcher.responsePhotos.send([
+    //   [newRef.key, payload]
+    // ])
   }
 
-  one (photoID) {
-    const ref = this.firebase.database().ref('photos/' + photoID)
+  one (id) {
+    const ref = this.firebase.database().ref(this.url + '/' + id)
     return ref.once('value').then(function (snapshot) {
       var result = {
         photoUrl: '',
+        content: '',
         userId: '',
         displayName: '',
         alt: '',
@@ -58,7 +49,7 @@ class Photo {
         var data = child.val()
         result[key] = data
       })
-      return [photoID, result]
+      return [id, result]
     })
   }
   // Get all public photos
@@ -74,6 +65,7 @@ class Photo {
 
         var record = {
           photoUrl: data.photoUrl || '',
+          content: data.content || '',
           userId: data.userId || '',
           displayName: data.displayName || '',
           alt: data.alt || '',
@@ -85,7 +77,7 @@ class Photo {
       return result
     })
   }
-  // GET all photos, paginated
+  // GET all topics, paginated
   // TODO: Add pagination
   all () {
     return this.ref
@@ -101,6 +93,7 @@ class Photo {
         var record = {
           photoUrl: data.photoUrl || '',
           userId: data.userId || '',
+          content: data.content || '',
           displayName: data.displayName || '',
           alt: data.alt || '',
           createdAt: data.createdAt || '',
@@ -111,44 +104,25 @@ class Photo {
       return result
     })
   }
-  getAll () {
-    this.ref.once('value').then(function (snapshot) {
-      snapshot.forEach(function (child) {
-        var key = child.key
-        var data = child.val()
-      })
-    })
-  //    var userId = firebase.auth().currentUser.uid;
-  // return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
-  //   var username = snapshot.val().username;
-  //   // ...
-  // });
-  }
-  updateOne () {
-      // firebase.database().ref(photosBaseRef + userId).set({
-      //   username: name,
-      //   email: email,
-      //   profile_picture: imageUrl
-      // })
-  }
-  updateAll () {}
-  delete (photoID) {
-      // firebase.database().ref(photosBaseRef + userId).remove()
-    // Delete the photo and the corresponding comments
-    const photo = this.firebase.database().ref('photos/' + photoID)
-    const comments = this.firebase.database().ref('comments')
-    return photo.remove().then(function (s1) {
-      return comments.orderByChild('photoId').equalTo(photoID).once('value').then(function (snapshot) {
-        var updates = {}
-        snapshot.forEach(function (child) {
-          updates[child.key] = null
-        })
-        return comments.update(updates)
-      })
-    })
+
+  delete (id) {
+    throw new Error('Delete topic not implemented')
+    // const topic
+    // const photo = this.firebase.database().ref(this.url + '/' + id)
+    // this.storage.child(this.url + '/' + file.name)
+    // const comments = this.firebase.database().ref('comments')
+    // return photo.remove().then(function (s1) {
+    //   return comments.orderByChild('photoId').equalTo(id).once('value').then(function (snapshot) {
+    //     var updates = {}
+    //     snapshot.forEach(function (child) {
+    //       updates[child.key] = null
+    //     })
+    //     return comments.update(updates)
+    //   })
+    // })
   }
 
-  uploadPhoto (id, displayName, alt) {
+  uploadPhoto (id, displayName, alt, content) {
     var self = this
     var node = document.getElementById(id)
     if (!node) {
@@ -157,7 +131,7 @@ class Photo {
     var file = node.files[0]
 
   // Upload file and metadata to the object 'images/mountains.jpg'
-    var uploadTask = this.storage.child('images/' + file.name).put(file)
+    var uploadTask = this.storage.child(this.url + '/' + file.name).put(file)
 
   // Listen for state changes, errors, and completion of the upload.
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
@@ -194,28 +168,8 @@ class Photo {
     // Upload completed successfully, now we can get the download URL
       var downloadURL = uploadTask.snapshot.downloadURL
       console.log('successfully saved file with the following url', downloadURL)
-      self.create(downloadURL, displayName, alt)
+      self.create(downloadURL, displayName, alt, content)
     })
   }
 }
-  // var commentsRef = firebase.database().ref('post-comments/' + postId);
-  // commentsRef.on('child_added', function(data) {
-  //   addCommentElement(postElement, data.key, data.val().text, data.val().author);
-  // });
-
-  // commentsRef.on('child_changed', function(data) {
-  //   setCommentValues(postElement, data.key, data.val().text, data.val().author);
-  // });
-
-  // commentsRef.on('child_removed', function(data) {
-  //   deleteComment(postElement, data.key);
-  // });
-
-  // ref.once('value', function(snapshot) {
-  //   snapshot.forEach(function(childSnapshot) {
-  //     var childKey = childSnapshot.key;
-  //     var childData = childSnapshot.val();
-  //     // ...
-  //   });
-  // });
 

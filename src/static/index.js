@@ -12,14 +12,11 @@ var models = {}
 
 var config = {
     // Place firebase config here
-  apiKey: 'AIzaSyCVDboPN9FMcAaFf3teK4wxhAgf0VePCm8',
-  authDomain: 'instaelm-9f923.firebaseapp.com',
-  databaseURL: 'https://instaelm-9f923.firebaseio.com',
-  projectId: 'instaelm-9f923',
-  storageBucket: 'instaelm-9f923.appspot.com',
-  messagingSenderId: '838973904562'
+
 }
 firebase.initializeApp(config)
+
+// AUTH
 
 app.ports.authenticate.subscribe(function () {
   firebase.auth().onAuthStateChanged(function (user) {
@@ -37,8 +34,9 @@ app.ports.authenticate.subscribe(function () {
       var providerData = user.providerData
 
       // Setup models
-      models.photo = new Photo(firebase, user.uid, app.ports)
       models.comment = new Comment(firebase, user.uid, app.ports)
+      models.photo = new Photo(firebase, user.uid, app.ports)
+      models.topic = new Topic(firebase, user.uid, app.ports)
       models.user = new User(firebase, app.ports)
     } else {
       // Reset
@@ -100,6 +98,18 @@ app.ports.signOut.subscribe(function () {
   })
 })
 
+// PUBLIC PHOTOS
+
+// Equivalent to GET /public_photos
+app.ports.requestPublicPhotos.subscribe(function () {
+  models.photo.publicAll().then(function (data) {
+    console.log('getPublicPhotos', data)
+    app.ports.responsePublicPhotos.send(data)
+  })
+})
+
+// PHOTOS
+
 // Equivalent to POST /photos
 app.ports.uploadFile.subscribe(function ([id, photo]) {
   models.photo.uploadPhoto(id, photo.displayName, photo.alt)
@@ -112,6 +122,7 @@ app.ports.photoCount.subscribe(function () {
     app.ports.photoCountSuccess.send(count)
   })
 })
+
 // Equivalent to GET /photos
 app.ports.requestPhotos.subscribe(function () {
       // models.photo.create()
@@ -134,6 +145,8 @@ app.ports.deletePhoto.subscribe(function (photoID) {
   })
 })
 
+// USERS
+
 // Equivalent to POST /users/profile_photos
 app.ports.profilePhoto.subscribe(function (id) {
   models.user.profilePhoto(id)
@@ -145,6 +158,8 @@ app.ports.setDisplayName.subscribe(function (displayName) {
     app.ports.setDisplayNameSuccess.send(displayName)
   })
 })
+
+// COMMENTS
 
 // Equivalent to POST /comments
 app.ports.createComment.subscribe(function (comment) {
@@ -173,3 +188,6 @@ app.ports.updateComment.subscribe(function ([commentId, comment]) {
     app.ports.updateCommentSuccess.send([commentId, comment])
   })
 })
+
+// TOPICS
+

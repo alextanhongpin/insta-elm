@@ -6,6 +6,9 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 // can add Boostrap overrides, additional Sass/CSS below...
 
 
+@import './reset.scss';
+@import './grid.scss';
+@import './colors.scss';
 @import './constants.scss';
 
 
@@ -23,6 +26,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import './page/register.scss';
 @import './page/profile.scss';
 @import './page/photo.scss';
+@import './page/feed.scss';
 
 
 body {

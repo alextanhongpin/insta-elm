@@ -1,7 +1,8 @@
 port module Molecule.Comment.Port exposing (..)
 
-import Molecule.Comment.Model exposing (Comment, CommentID)
-import Model.Photo exposing (PhotoID)
+import Molecule.Comment.Types exposing (Comment, CommentID)
+import Molecule.Photo.Types exposing (Photo, PhotoID)
+
 
 
 -- PUB
@@ -20,3 +21,8 @@ port responseComments : (List (CommentID, Comment) -> msg) -> Sub msg
 port deleteCommentSuccess : (String -> msg) -> Sub msg
 port updateCommentSuccess : ((CommentID, Comment) -> msg) -> Sub msg
 
+
+-- TODO: Naming pattern
+-- request/response pair
+-- or 
+-- action/actionCallback

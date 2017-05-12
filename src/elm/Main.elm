@@ -1,8 +1,9 @@
 module Main exposing (main)
 
-import State exposing (init, update, subscriptions)
+import State exposing (init, update)
 import Types exposing (Msg(OnLocationChange), Model)
 import View exposing (view)
+import Port exposing (subscriptions)
 import Navigation
 
 -- APP

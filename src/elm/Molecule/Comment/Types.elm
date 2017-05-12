@@ -1,8 +1,22 @@
-module Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+module Molecule.Comment.Types exposing (Comment, CommentID, CommentMsg(..), CommentEditMsg(..))
 
-import Molecule.Comment.Model exposing (Comment, CommentID)
 
+-- MODEL
+
+
+type alias Comment = 
+    { photoId : String
+    , text : String
+    , userId : String
+    }
+
+
+type alias CommentID = String
 type alias Text = String
+
+
+-- MSG
+
 
 -- CRUD Msg
 type CommentMsg

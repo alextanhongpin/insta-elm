@@ -6,15 +6,14 @@ import Page.Photo.Types exposing (Model, Msg(..))
 -- PORT
 
 
-import Port.Photo as PhotoPort
+import Molecule.Photo.Port as PhotoPort
+import Molecule.Comment.Port as CommentPort
 
 
 -- MODEL
 
 
-import Molecule.Comment.Port as CommentPort
-import Molecule.Comment.Model exposing (Comment, CommentID)
-import Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+import Molecule.Comment.Types exposing (Comment, CommentID, CommentMsg(..), CommentEditMsg(..))
 
 
 -- UPDATE

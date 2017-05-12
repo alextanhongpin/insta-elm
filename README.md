@@ -135,6 +135,23 @@ parseLocation : Navigation.Location -> Route
 import Page.Login.View as LoginPage
 ```
 
+4. Separate Msg
+
+There are few kinds of msgs as displayed below. If necessary, separate them.
+```elm
+type Msg
+  | Login -- Click events
+  | LoginCallback -- Port subscription 
+  | LoginRest -- Calling a remote api
+  | InputPassword String -- onInput event
+
+type PortMsg 
+  = LoginCallback
+
+type EventMsg 
+  = Login
+   | InputPassword String
+```
 
 ### User Stories
 

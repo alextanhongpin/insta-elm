@@ -2,13 +2,13 @@
 firebase connection
 --}
 
-port module Port.Photo exposing (..)
+port module Molecule.Photo.Port exposing (..)
 
 
 -- MODEL
 
 
-import Model.Photo exposing (Photo, PhotoID)
+import Molecule.Photo.Types exposing (Photo, PhotoID)
 
 
 -- PUB 
@@ -17,6 +17,7 @@ import Model.Photo exposing (Photo, PhotoID)
 port photoCount : () -> Cmd msg
 port deletePhoto : PhotoID -> Cmd msg
 port requestPhoto : PhotoID -> Cmd msg
+port requestPublicPhotos : () -> Cmd msg
 
 
 -- SUB
@@ -25,3 +26,4 @@ port requestPhoto : PhotoID -> Cmd msg
 port photoCountSuccess : (Int -> msg) -> Sub msg
 port deletePhotoSuccess : (PhotoID -> msg) -> Sub msg
 port responsePhoto : ((PhotoID, Photo) -> msg) -> Sub msg
+port responsePublicPhotos : (List(PhotoID, Photo) -> msg) -> Sub msg

@@ -4,10 +4,9 @@ module Page.Photo.Types exposing (Model, model, Msg(..))
 -- MODEL
 
 
-import Molecule.Comment.Model exposing (Comment, CommentID)
-import Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+import Molecule.Comment.Types exposing (Comment, CommentID, CommentMsg(..), CommentEditMsg(..))
 
-import Model.Photo exposing (Photo, PhotoID)
+import Molecule.Photo.Types exposing (Photo, PhotoID)
 
 
 

@@ -4,29 +4,37 @@ port module State exposing (..)
 -- import Types exposing (..)
 import Navigation exposing (Location)
 import Router.Main as Routing exposing (reverseRoute)
-import Router.Types exposing (Route(ProfileRoute, PhotoRoute, LoginRoute, RegisterRoute, HomeRoute))
-
+import Router.Types exposing (Route(..))
+import Port exposing (..)
 
 -- PAGE
 
 
-import Page.Login.Types as LoginUnion
+-- STATE
+
+
 import Page.Login.State as LoginState
-import Page.Photo.Types as PhotoUnion
 import Page.Photo.State as PhotoState
-import Page.Profile.Types as ProfileUnion
 import Page.Profile.State as ProfileState
--- import Page.Register.Types as RegisterUnion
 import Page.Register.State as RegisterState
+import Page.Topic.State as TopicState
+import Page.Feed.State as FeedState
+
+
+-- Types
+
+
+import Page.Login.Types as LoginTypes
+import Page.Photo.Types as PhotoTypes
+import Page.Profile.Types as ProfileTypes
+import Page.Feed.Types as FeedTypes
 
 
 -- PORT
 
 
-import Port.Profile as ProfilePort exposing (..)
-import Port.Photo as PhotoPort exposing (..)
+import Molecule.Photo.Port as PhotoPort exposing (..)
 import Molecule.Comment.Port as CommentPort exposing (..)
-import Molecule.Comment.Types as CommentTypes exposing (CommentMsg(..))
 
 
 -- import Types exposing (Model, Msg(NavigateTo, LoginPageMsg))
@@ -51,15 +59,6 @@ init location =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    --FireAPI (Ok newmeta) ->
-    --  ({ model | metadata = newmeta }, Cmd.none)
-
-    --FireAPI (Err _) -> 
-    --  (model, Cmd.none)
-
-    --FetchService ->
-    --  (model, serviceAPI model.url )
-
     OnLocationChange location -> 
       let
         newRoute = 
@@ -67,15 +66,7 @@ update msg model =
       in
       ( { model | route = newRoute }, Cmd.none )
 
-
-    Logout -> 
-      --let 
-      --  msg = NavigateTo LoginRoute
-      --in
-      --  let 
-      --    updatedModel = { model | isAuthorized = False }
-      --  in
-      --    update msg updatedModel
+    Logout ->
       -- Empty the state
         (model, Cmd.batch [ signOut (), Cmd.none ])
 
@@ -88,29 +79,19 @@ update msg model =
 
     LoginPageMsg childMsg ->
       case childMsg of
-        --LoginUnion.LoginError error ->
-        --  let
-        --    ( loginModel, loginCmd ) = 
-        --      LoginState.update childMsg model.loginPage
-        --    updatedModel = { loginModel | error = error }
-        --  in
-        --    ({ model | loginPage = updatedModel }
-        --    , Cmd.map LoginPageMsg loginCmd
-        --    )
-
-        LoginUnion.LoginSuccess user ->
+        LoginTypes.LoginSuccess user ->
           let 
             msg = NavigateTo ProfileRoute
             updatedModel = 
               { model 
-                | loginPage = LoginUnion.model
+                | loginPage = LoginTypes.model
                 , user = user
                 , isAuthorized = True 
               }
           in
             update msg updatedModel
 
-        LoginUnion.OnSubmitLogin ->
+        LoginTypes.OnSubmitLogin ->
           let
             ( loginModel, loginCmd ) = 
               LoginState.update childMsg model.loginPage
@@ -139,7 +120,7 @@ update msg model =
 
     PhotoPageMsg childMsg ->
       case childMsg of
-        PhotoUnion.DeletePhotoSuccess photoID ->
+        PhotoTypes.DeletePhotoSuccess photoID ->
           let
             profilePageModel = model.profilePage
             photos = profilePageModel.photos
@@ -169,9 +150,37 @@ update msg model =
             , Cmd.map RegisterPageMsg registerCmd
             )
 
+    FeedPageMsg childMsg ->
+      case childMsg of
+        FeedTypes.GoToTopic topicID ->
+          let 
+            msg = NavigateTo (TopicRoute topicID)
+          in
+            update msg model
+
+        _ -> 
+          let
+            ( feedModel, feedCmd ) = 
+             FeedState.update childMsg model.feedPage
+          in
+            ({ model | feedPage = feedModel }
+            , Cmd.map FeedPageMsg feedCmd
+            )
+
+    TopicPageMsg childMsg ->
+      case childMsg of
+        _ -> 
+          let
+            ( topicModel, topicCmd ) = 
+             TopicState.update childMsg model.topicPage
+          in
+            ({ model | topicPage = topicModel }
+            , Cmd.map TopicPageMsg topicCmd
+            )
+
     ProfilePageMsg childMsg ->
       case childMsg of
-        ProfileUnion.SetDisplayNameSuccess displayName -> 
+        ProfileTypes.SetDisplayNameSuccess displayName -> 
           let
             ( profileModel, profileCmd ) = ProfileState.update childMsg model.profilePage
             userModel = model.user
@@ -184,35 +193,11 @@ update msg model =
               , Cmd.map ProfilePageMsg profileCmd
               )
 
-        ProfileUnion.NavigateTo photoId ->
+        ProfileTypes.NavigateTo photoId ->
           let
             newMsg = NavigateTo (PhotoRoute photoId)
-            -- Get the first photo
-            --photos = List.filter (\(id, _) -> id == photoId ) model.profilePage.photos
-            --photoPageModel = model.photoPage
           in
-            --case List.head photos of
-            --  Just p -> 
-            --    let
-            --      photoUrl
-            --        = p
-            --        |> Tuple.second
-            --        |> .photoUrl
-            --      photoID
-            --        = p
-            --        |> Tuple.first
-            --      updatedPhotoPageModel 
-            --        = { photoPageModel 
-            --          | photoUrl = photoUrl
-            --          , photoID = photoID }
-            --      newModel = { model | photoPage = updatedPhotoPageModel }
-            --    in 
             update newMsg model
-
-              --Nothing ->
-              --  -- Not found
-              --  update (NavigateTo ProfileRoute) model
-
             
         _ -> 
           let
@@ -225,6 +210,8 @@ update msg model =
 
     NavigateTo route ->
       case route of
+        FeedRoute ->
+          (model, Cmd.batch[requestPublicPhotos (), Navigation.newUrl ((reverseRoute route) )])
 
         ProfileRoute ->
           if
@@ -244,7 +231,6 @@ update msg model =
             ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
         _ ->
         -- Reset the state when go to a new page
-        --  ({ model | photoPage = PhotoUnion.model }, Navigation.newUrl (reverseRoute route))
           (model, Navigation.newUrl (reverseRoute route))
 
     Authenticate str -> 
@@ -284,69 +270,4 @@ update msg model =
         output = { registerPage | error = "YESS" }
       in
         ({model | registerPage = output }, Cmd.none)
-
-
--- SUBSCRIPTIONS
-
-
--- Pub
-
-
-port authenticate : () -> Cmd msg
-port signOut : () -> Cmd msg
-
-
--- Sub
-
-
-port authenticateSuccess : (LoginUnion.User -> msg) -> Sub msg
-port onAuthenticateStateChange : (String -> msg) -> Sub msg
-
--- A subscriber to get access token from the localStorage
-port portSubscribeToken : (String -> msg) -> Sub msg
-port logoutSuccess : (String -> msg) -> Sub msg
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  -- Sub.none
-  Sub.batch
-    [ onAuthenticateStateChange Authenticate
-    , RegisterState.onRegistered RegisterCallback 
-    , logoutSuccess LogoutSuccess
-    , authenticateSuccess AuthenticateSuccess
-    {-- This is a bit tricky:
-      We map the Child subscription to the childMsg first
-      which will be the parameters for loginPageMsg
-    --}
-    
-
-    -- Login Page
-
-
-    , Sub.map LoginPageMsg (LoginState.loginSuccess LoginUnion.LoginSuccess)
-    , Sub.map LoginPageMsg (LoginState.loginError LoginUnion.LoginError)
-    
-
-    -- ProfilePage
-
-
-    , Sub.map ProfilePageMsg (ProfileState.responsePhotos ProfileUnion.ResponsePhotos)
-    , Sub.map ProfilePageMsg (ProfileState.profilePhotoSuccess ProfileUnion.ProfilePhotoSuccess)
-    , Sub.map ProfilePageMsg (ProfileState.progress ProfileUnion.Progress)
-    , Sub.map ProfilePageMsg (ProfileState.uploadProgress ProfileUnion.UploadProgress)
-    , Sub.map ProfilePageMsg (setDisplayNameSuccess ProfileUnion.SetDisplayNameSuccess)
-    , Sub.map ProfilePageMsg (PhotoPort.photoCountSuccess ProfileUnion.PhotoCountSuccess)
-    
-
-    -- PhotoPage
-
-
-    , Sub.map PhotoPageMsg (PhotoPort.responsePhoto PhotoUnion.ResponsePhoto)
-    , Sub.map PhotoPageMsg (PhotoPort.deletePhotoSuccess PhotoUnion.DeletePhotoSuccess)
-    , Sub.map PhotoPageMsg (CommentPort.responseComments (PhotoUnion.CommentAction << CommentTypes.All))
-    , Sub.map PhotoPageMsg (CommentPort.deleteCommentSuccess (PhotoUnion.CommentAction << CommentTypes.DeleteCallback))
-    , Sub.map PhotoPageMsg (CommentPort.updateCommentSuccess (PhotoUnion.CommentAction << CommentTypes.UpdateCallback))
-    ]
-
-
 

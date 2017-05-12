@@ -1,6 +1,6 @@
 -- Photo is the photo metadata
 
-module Model.Photo exposing (Photo, PhotoID)
+module Molecule.Photo.Types exposing (Photo, PhotoID, PhotoMsg(..))
 
 
 -- MODEL
@@ -17,3 +17,10 @@ type alias Photo =
 
 
 type alias PhotoID = String
+
+
+-- MSG
+
+
+type PhotoMsg 
+    = PublicAll (List(PhotoID, Photo))

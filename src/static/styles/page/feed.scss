@@ -1,0 +1,45 @@
+.page-feed {
+	text-align: center;
+
+	.feed {
+		text-align: left;
+	}
+	.feed-item {
+		@extend %flex;
+		padding: 0 $dimension-100;
+	}
+
+	.feed-item__image {
+		height: 80px;
+		width: 80px;
+		background: silver;
+	}
+
+	.feed-item__content {
+		@extend %flex;
+		flex-wrap: wrap;
+		padding: 0 $dimension-100;
+		align-items: center;
+	}
+
+	.feed-item__content-header {
+		@extend %no-link;
+		font-weight: bold;
+		font-size: 16px;
+		width: 100%;
+	}
+	.feed-item__content-body {
+		font-size: 12px;
+		color: $gray;
+		width: 100%;
+	}
+	.feed-item__content-footer {
+		font-size: 14px;
+		width: 100%;
+	}
+
+	.photo-thumbnail {
+		width: 240px;
+		height: auto;
+	}
+}

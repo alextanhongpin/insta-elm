@@ -20,6 +20,9 @@ matchers =
     , map HomeRoute (s "home")
     , map ProfileRoute (s "profile")
     , map PhotoRoute (s "photos" </> string)
+    , map FeedRoute (s "feeds")
+    , map TopicsRoute (s "topics")
+    , map TopicRoute (s "topics" </> string)
     ]
 
 parseLocation : Location -> Route
@@ -57,6 +60,15 @@ reverseRoute route =
 
     PhotoRoute id ->
       "/photos/" ++ id
+
+    FeedRoute ->
+      "/feeds"
+
+    TopicsRoute ->
+      "/topics"
+
+    TopicRoute id ->
+      "/topics/" ++ id
 
     NotFoundRoute ->
       "/404"

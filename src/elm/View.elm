@@ -24,8 +24,10 @@ import Page.Login.View as LoginPage
 import Page.Home.View as HomePage
 import Page.Profile.View as ProfilePage
 import Page.Photo.View as PhotoPage
+import Page.Feed.View as FeedPage
 import Page.Register.View as RegisterPage
-
+import Page.Topic.View as TopicPage
+import Page.Topics.View as TopicsPage
 
 -- VIEW
 
@@ -91,6 +93,24 @@ view model =
         div [] 
           [ Header.view model
           , Html.map PhotoPageMsg (PhotoPage.view model.photoPage)
+          ]
+
+      FeedRoute ->
+        div [] 
+          [ Header.view model
+          , Html.map FeedPageMsg (FeedPage.view model.feedPage)
+          ]
+
+      TopicsRoute ->
+        div []
+          [ Header.view model
+          , TopicsPage.view
+          ]
+
+      TopicRoute id ->
+        div []
+          [ Header.view model
+          , Html.map TopicPageMsg (TopicPage.view model.topicPage)
           ]
 
       NotFoundRoute ->

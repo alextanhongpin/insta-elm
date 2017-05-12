@@ -14,8 +14,7 @@ import Page.Photo.Types exposing (Model, Msg(..))
 -- MODEL
 
 
-import Molecule.Comment.Model exposing (Comment, CommentID)
-import Molecule.Comment.Types exposing (CommentMsg(..), CommentEditMsg(..))
+import Molecule.Comment.Types exposing (Comment, CommentID, CommentMsg(..), CommentEditMsg(..))
 
 
 -- VIEW
