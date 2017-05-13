@@ -2,7 +2,7 @@ module Page.Post.View exposing (view)
 
 import Html exposing (Html, a, b, button, div, span, text, input, Attribute)
 import Html.Attributes exposing (class, id, type_, placeholder, value, tabindex)
-import Html.Events exposing (on, onClick, onBlur, onInput, keyCode)
+import Html.Events exposing (on, onClick, onBlur, onInput, keyCode, onFocus)
 
 import Json.Decode as Json
 
@@ -26,20 +26,38 @@ view model =
         [ div [ class "container col-8" ]
             [ div [ class "br br-200" ] []
             , div [ class "post" ]
-                [ div [ class "post-footer" ] [ text "submitted by john doe in my/apple"]
+                [ div [ class "post-footer" ]
+                    [ text "submitted by "
+                    , a [] [ text model.owner ]
+                    , text " in "
+                    , case model.topic of 
+                        Just topic -> 
+                            a [] [ text ("my/" ++ topic) ]
+                        Nothing ->
+                            text "Nothing"
+                    ]
                 , div [ class "br br-100" ] []
-                , div [ class "post-header"] [ text "Need help getting a house in Petaling Jaya" ]
-                , div [ class "br br-100" ] []
-                , div [ class "post-body"] [ text "This is a list of items im talking about. I have difficulty getting a house here in Petaling Jaya. Just moved here from\n\nBut it doesn't matter" ]
+                , div [ class "headline"]
+                    [ div [ class "headline-left" ]
+                        [ div [ class "post-header"] [ text "Need help getting a house in Petaling Jaya" ]
+                        , div [ class "br br-100" ] []
+                        , div [ class "post-body"] [ text "This is a list of items im talking about. I have difficulty getting a house here in Petaling Jaya. Just moved here from\n\nBut it doesn't matter" ]
+                        ]
+                    , div [ class "headline-right" ]
+                        [  div [ class "headline-icon-edit"] [ Icon.view "more_vert" ] ]
+                    ]
                 ]
 
 
             -- BR
             , div [ class "br br-200" ] []
 
-            , div [ class "comment-prev" ] [ text "show previous comments" ]
+            , div [ class "comment-prev", onClick LoadMore ] [ text "show previous comments" ]
             , div [] (List.map (commentView model) model.comments)
             , commentFormView model
+
+            -- BR
+            , div [ class "br  br-200" ] []
             ] -- End of container
         ]
 
@@ -69,6 +87,7 @@ commentFormView model =
                     , onInput OnInputComment
                     , value model.comment
                     , onKeyDown OnKeyDown
+                    , onFocus OnFocusInputWhileEditing
                     ] [] 
                 ]
             , div [ class "br br-50" ] []
@@ -85,7 +104,6 @@ editMenuView : String -> Html Msg
 editMenuView commentID = 
     div [ id commentID, class "comment-menu", onBlur OnBlurEditMenu, tabindex 0 ]
         [ div [ class "content-menu__item", onClick (OnEdit commentID)] [ text "Edit"]
-        , div [ class "content-menu__item", onClick (ToggleEdit commentID) ] [ text "Cancel" ] 
         , div [ class "content-menu__item", onClick (OnDelete commentID) ] [ text "Delete" ] 
         ]
 
@@ -98,6 +116,7 @@ commentView parent (id, model) =
     let
         isEditMode =  parent.isEditing && parent.editIndex == id
         showEditMenu = parent.showEdit && parent.editIndex == id
+        isOwner = parent.owner == model.name
     in
         div [ class "comment" ]
             [ div [ class "comment-left" ]
@@ -129,19 +148,37 @@ commentView parent (id, model) =
                                 ]
                         ]
                     ]
-                , 
-                if isEditMode then
-                    div [] []
+                ,
+                -- Only the owner can edit it
+                if isOwner then
+                    if isEditMode then 
+                        span [] []
+                    else
+                        div [ class "comment-nested-right" ]
+                            [ div 
+                                [ class "comment-icon--edit"
+                                , onClick (ToggleEdit id)
+                                ] [ Icon.view "more_vert" ]
+                            , if showEditMenu then
+                                editMenuView id
+                              else
+                                span [] []
+                            ]
+                        
                 else
-                    div [ class "comment-nested-right" ]
-                        [ div 
-                            [ class "comment-icon--edit"
-                            , onClick (ToggleEdit id)
-                            ] [ Icon.view "more_vert" ]
-                        , if showEditMenu then
-                            editMenuView id
-                          else
-                            span [] []
-                        ]
-                    ]
+                    span [] []
+                ]
     ]
+
+
+
+
+
+
+
+
+
+
+
+
+

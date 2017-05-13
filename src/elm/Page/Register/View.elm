@@ -1,56 +1,61 @@
 module Page.Register.View exposing (view)
 
 import Html exposing (Html, br, button, div, form, input, text, label)
-import Html.Attributes exposing (placeholder, value, class, type_, id, for)
+import Html.Attributes exposing (placeholder, value, class, type_, id, for, disabled)
 import Html.Events exposing (onClick, onInput)
 import Router.Main exposing (onClickPreventDefault)
 
 
 -- PAGES
+import Atom.Input.Types as InputModel exposing (Model)
+import Atom.Input.View as Input exposing (view)
 
+import Page.Register.Types as RegisterTypes exposing (Model, Msg(Register, OnInputEmail, OnInputPassword))
 
-import Page.Register.Types exposing (Model, Msg(Register, OnInputEmail, OnInputPassword))
-
-view : Model -> Html Msg
+view : RegisterTypes.Model -> Html Msg
 view model =
-    div [ class "page page--register" ] 
-        [ div [ class "page-title"] [ text "Create an account" ]
-        , form [] 
-            [ div [ class "hint hint--error" ] [ text model.error ]
-            , inputGroupLogin model
-            , br [] []
-            , passwordGroupLogin model
-            , br [] []
-            , br [] []
-            , button [ onClickPreventDefault Register ] [ text "Submit" ]
+    let
+        hasEmail
+            = model.email
+            |> String.trim
+            |> String.isEmpty
+        hasPassword 
+            = model.password
+            |> String.trim
+            |> String.isEmpty
 
-        ]
-    ]
+        buttonText = if model.hasSubmitLogin then "Loading..." else "Continue"
 
 
+        isButtonDisabled = if model.hasSubmitLogin then True else hasPassword || hasEmail
 
-inputGroupLogin : Model -> Html Msg
-inputGroupLogin model = 
-    div [] 
-        [ div [] [ label [ for "email" ] [ text "Email" ] ]
-        , div [] 
-            [ input [ placeholder "Enter email"
-            , id "email"
-            , type_ "email"
-            , onInput OnInputEmail
-            , value model.email ] [] 
-        ]
-    ]
+        emailInput = Input.view (InputModel.Model "email" "Email" "Enter email" "email")
+        passwordInput = Input.view (InputModel.Model "password" "Password" "Enter password" "password")
 
-passwordGroupLogin : Model -> Html Msg
-passwordGroupLogin model = 
-    div [] 
-        [ div [] [ label [ for "password" ] [ text "Password" ] ]
-        , div [] 
-            [ input [ placeholder "Enter password"
-            , id "password"
-            , type_ "password"
-            , onInput OnInputPassword
-            , value model.password ] [] 
+
+    in
+        div [ class "page page-register" ] 
+            [ div [ class "container col-4"]
+                [ div [ class "br br-200" ] []
+                , div [ class "page-title"] [ text "Create an account" ]
+                
+                -- BR
+                , div [ class "br br-200" ] []
+
+                , form [] 
+                    [ div [ class "br br-200" ] []
+
+                    , emailInput OnInputEmail model.email
+                    , passwordInput OnInputPassword model.password
+
+                    -- BR
+                    , div [ class "br br-50" ] []
+
+                    , div [ class "hint is-error" ] [ text model.error ]
+                    -- BR
+                    , div [ class "br br-200" ] []
+
+                    , button [ class "button", onClickPreventDefault Register, disabled isButtonDisabled ] [ text buttonText ]
+                ]
             ]
-    ]
+        ]

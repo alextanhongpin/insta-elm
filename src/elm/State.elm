@@ -18,7 +18,7 @@ import Page.Photo.State as PhotoState
 import Page.Profile.State as ProfileState
 import Page.Register.State as RegisterState
 import Page.Topic.State as TopicState
--- import Page.Topics.State as TopicsState
+import Page.Topics.State as TopicsState
 import Page.Feed.State as FeedState
 import Page.Post.State as PostState
 
@@ -181,6 +181,12 @@ update msg model =
           in
             update msg model
 
+        TopicTypes.GoToTopic topic ->
+          let 
+            msg = NavigateTo (TopicRoute topic)
+          in
+            update msg model
+
         _ -> 
           let
             ( topicModel, topicCmd ) = 
@@ -197,14 +203,14 @@ update msg model =
             msg = NavigateTo (TopicRoute topic)
           in
             update msg model
-        --_ -> 
-        --  let
-        --    ( topicsModel, topicsCmd ) = 
-        --     TopicsState.update childMsg model.topicsPage
-        --  in
-        --    ({ model | topicsPage = topicsModel }
-        --    , Cmd.map TopicsPageMsg topicsCmd
-        --    )
+        _ -> 
+          let
+            ( topicsModel, topicsCmd ) = 
+             TopicsState.update childMsg model.topicsPage
+          in
+            ({ model | topicsPage = topicsModel }
+            , Cmd.map TopicsPageMsg topicsCmd
+            )
     PostPageMsg childMsg ->
       case childMsg of
         _ -> 
@@ -271,12 +277,21 @@ update msg model =
             newPageModel = { pageModel | comments = [] }
           in
             ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
+
         TopicRoute topic ->
           let
             pageModel = model.topicPage
             newPageModel = { pageModel | topic = topic }
           in
             ({ model | topicPage = newPageModel }, Navigation.newUrl (reverseRoute route))
+
+        PostRoute topic id ->
+          let
+            pageModel = model.postPage
+            newPageModel = { pageModel | topic = Just(topic), postID = Just(id) }
+          in
+            { model | postPage = newPageModel } ! [ Navigation.newUrl (reverseRoute route) ]
+
         _ ->
         -- Reset the state when go to a new page
           (model, Navigation.newUrl (reverseRoute route))
@@ -320,8 +335,8 @@ update msg model =
         ({model | registerPage = output }, Cmd.none)
 
 
-    OnMouseClick position ->
-      ({ model | position = position }, Cmd.none)
+    -- OnMouseClick position ->
+    --   ({ model | position = position }, Cmd.none)
 
 
 

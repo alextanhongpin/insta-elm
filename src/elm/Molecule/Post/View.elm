@@ -1,9 +1,9 @@
 module Molecule.Post.View exposing (view)
 
 import Html exposing (Html, a, div, img, text)
-import Html.Attributes exposing (class, href)
+import Html.Attributes exposing (class, href, src)
 
-
+import Molecule.Post.Types exposing (Topic)
 -- ROUTER
 
 
@@ -14,16 +14,30 @@ import Router.Types exposing (Route(..))
 -- VIEW
 
 
-view : Route -> msg -> Html msg
-view route act = 
+view : Route -> Route -> msg -> msg -> Topic -> Html msg
+view route topicRoute topicAct act model =
     div [ class "post-item" ]
-        [ div [ class "post-item__image" ] [ img [] [] ]
+        [ div [ class "post-item__image" ] [ img [ src "" ] [] ]
         , div [ class "post-item__content" ] 
             [ a [ href (reverseRoute route)
                 , onClickPreventDefault act
-                , class "post-item__content-header" ] [ text "This guy is rich. Find out why." ]
-            , div [ class "post-item__content-body" ] [ text "submitted 7 hours ago by someone to", a [] [ text "r/golang" ]]
+                , class "post-item__content-header" ] [ text model.title ]
+
+            , div [ class "post-item__content-body" ]
+                [ text "submitted "
+                , text model.createdAt
+                , text " by "
+                , text model.owner 
+                , text " to "
+                , a [ href (reverseRoute topicRoute)
+                    , onClickPreventDefault topicAct 
+                    ] [ text model.topic ]
+                ]
+
+            -- BR
             , div [ class "br br-100" ] []
-            , div [ class "post-item__content-footer"] [ text "100 comments | share | save"]
+            
+            , div [ class "post-item__content-footer"]
+                [ text ((toString model.commentCount) ++ " comments | share | save") ]
             ]
         ]

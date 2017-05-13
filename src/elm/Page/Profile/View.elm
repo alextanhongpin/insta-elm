@@ -1,9 +1,18 @@
 module Page.Profile.View exposing (view)
 
-import Html exposing (Html, a, b, br, button, div, span, text, input, img, i)
-import Html.Attributes exposing (class, href, type_, id, src, width, height, style, accept, value, placeholder)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (on, onInput, onClick)
 import Json.Decode as Json
+
+
+-- ATOM
+
+
+import Atom.Break.View exposing (br1, br2, br3)
+
+
+-- ROUTER
 
 
 import Router.Main exposing (reverseRoute, onClickPreventDefault)
@@ -30,10 +39,15 @@ import Page.Profile.Types exposing (Model, PhotoInfo, Msg(..))
 
 view : Model -> Html Msg
 view model =
-    div [ class "page page--profile" ] 
-        [ br [] []
-        , user model
-        , photosView model
+    div [ class "page page-profile" ] 
+        [ div [ class "container col-8" ]
+            [ br2
+            , br2
+            , userView model
+            , br2
+            , uploadPhotoView model
+            , photosView model
+            ]
         ]
 
 
@@ -54,63 +68,88 @@ usernameText model =
 
 editIcon : Html Msg
 editIcon 
-    = i [ class "material-icons md-18 md-inactive"
-        , onClick ToggleEditProfile 
+    = i [ class "material-icons icon-edit"
+        , onClick ToggleEditProfile
+        , title "Edit"
         ] [ text "mode_edit" ]
+
 
 isEditingView : Model -> Html Msg
 isEditingView model =
     if model.enableEditProfile then
         div [] 
-            [ input [ type_ "text", value model.ghostDisplayName, placeholder "Enter displayName", onInput DisplayName ] []
-            , button [ onClick ToggleEditProfile ] [ text "Cancel" ]
-            , button [ onClick SubmitEdit ] [ text "Submit" ] 
+            [ div [] 
+                [ input [ type_ "text", value model.ghostDisplayName, placeholder "Your username...", onInput DisplayName ] []
+                ]
+            , 
+            div []
+                [ a [ onClick ToggleEditProfile ] [ text "Cancel" ]
+                , text " "
+                , a [ onClick SubmitEdit ] [ text "Submit" ] 
+                ]
             ]
     else
         div [] 
             [ b [] [ text (usernameText model) ]
             , span [] [ text " " ]
-            , button [ onClick ToggleEditProfile ] [ text "Edit Profile" ]
+            -- , button [ onClick ToggleEditProfile ] [ text "Edit Profile" ]
+            , editIcon
             ]
 
-user : Model -> Html Msg
-user model =
-    div [ class "user" ] 
-        [ div [ class "user-photo",  style (imageCover model.photoURL) ] [ ]
-        , br [] []
-        , isEditingView model
-        , br [] []
-        , br [] []
-        -- , div [] [ text "upload profile photo" ]
-        -- , div [] [ text (toString(model.progress))]
-        , input 
-            [ id "profilePhoto"
-            , type_ "file"
-            , accept "image/*"
-            , on "change" (Json.succeed (ProfilePhoto "profilePhoto"))
-            ] []
-        , div [] 
-            [ div [] [ text "Upload Photo" ]
-            -- , div [] [ text ("Progress:" ++ toString(model.uploadProgress))]
-            , input [ type_ "text", value model.alt, placeholder "Enter image caption", onInput Caption ] []
+
+userView : Model -> Html Msg
+userView model =
+    let 
+        photoCount = toString(model.count) ++ " photos"
+        postCount = "53 posts"
+        followerCount = "100 followers"
+
+        countLabel = String.join " | " [photoCount, postCount, followerCount]
+    in
+        div [ class "user" ] 
+            [ label [ class "user-photo", for "profilePhoto",  style (imageCover model.photoURL) ] [ ]
+            , br2
+            , isEditingView model
+            , br2
+            , div [ class "user-stats" ] [ text countLabel ]
+            , br2
+
+            -- , div [] [ text (toString(model.progress))]
+            -- A hidden html input file
             , input 
-                [ id "uploader"
+                [ id "profilePhoto"
                 , type_ "file"
                 , accept "image/*"
-                , on "change" (Json.succeed (UploadFile "uploader" (PhotoInfo "" "" model.displayName model.alt "" "")))
+                , on "change" (Json.succeed (ProfilePhoto "profilePhoto"))
+                , style [ ("display", "none")]
                 ] []
-            ]
-        , div [] 
-            [ span [] [ text "101 Followers" ]
-            , span [] [ text " " ] 
-            , span [] [ text (toString(model.count)) ]
-            ]
-        , div [] [ text model.uid ]
     ]
+
+uploadPhotoView : Model -> Html Msg
+uploadPhotoView model =
+    div [ class "form-photo" ] 
+        [ div [] [ text "Upload Photo" ]
+        , div [] [ text ("Progress:" ++ toString(model.uploadProgress))]
+        , textarea
+            [ class "form-photo__textarea"
+            , value model.alt
+            , placeholder ("Whats on your mind " ++ (usernameText model))
+            , onInput Caption
+            , rows 3
+            ] []
+        , input 
+            [ id "uploader"
+            , type_ "file"
+            , accept "image/*"
+            , on "change" (Json.succeed (UploadFile "uploader" (PhotoInfo "" "" model.displayName model.alt "" "")))
+            ] []
+        ]
+
 
 photosView : Model -> Html Msg
 photosView model = 
     div [] (List.map photoView model.photos)
+
 
 photoView : (String, PhotoInfo) -> Html Msg
 photoView (key, data) =
@@ -123,11 +162,10 @@ photoView (key, data) =
           ] [ img [ class "grid", src data.photoUrl ] []
             ]
 
-type alias PhotoInfo =
-    { photoUrl : String
-    , userId : String
-    , displayName : String
-    , alt : String
-    , createdAt : String
-    , updatedAt : String
-    }
+
+
+
+
+
+
+

@@ -17,18 +17,44 @@
 		font-weight: 300;
 	}
 
+	.button-create-wrapper {
+		text-align: right;
+	}
+
 	.form-topic {
 		border: $border-primary;
 		border-radius: 5px;
+		padding: 0 $dimension-200;
+	}
+	// Close button for the topic
+	.form-topic-backdrop {
+	}
+	.form-topic__button-close {
+
+	}
+	.form-topic-header {
+		text-align: right;
+	}
+
+	.form-topic-input {
+		width: 100%;
+		height: 30px;
+		padding: 0 $dimension-100;
+	}
+
+	.form-topic__placeholder-create {
+		background: $alto;
+		text-align: center;
 		padding: $dimension-200;
 	}
 
 	.form-topic__textarea {
 		width: 100%;
 		border: none;
-		background: $alto;
+		background: rgba($alto, .5);
 		resize: none;
 		padding: $dimension-100;
 	}
+
 
 }

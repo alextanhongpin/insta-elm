@@ -7,4 +7,8 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         GoToTopic topic ->
-            (model, Cmd.none)
+            -- (model, Cmd.none)
+            model ! []
+
+        Search query ->
+            { model | query = query } ! []

@@ -1,20 +1,46 @@
-
-
-.user {
+.page-profile {
 	text-align: center;
-}
-.user-photo {
-	height: 100px;
-	width: 100px;
-	border: 2px solid #dcdcdc;
-	border-radius: 50%;
-	display: inline-block;
-}
 
-.grid {
-	height: 200px;
-	width: 200px;
-	display: inline-block;
-	background: #dcdcdc;
-	margin: 5px;
+	.container {
+		text-align: left;
+	}
+	.user {
+		text-align: center;
+	}
+	.user-stats {
+		color: $gray;
+	}
+	.user-photo {
+		height: 120px;
+		width: 120px;
+		border: 2px solid $alto;
+		border-radius: 50%;
+		display: inline-block;
+	}
+
+	.grid {
+		height: 200px;
+		width: 200px;
+		display: inline-block;
+		background: #dcdcdc;
+		margin: 5px;
+	}
+
+	.icon-edit {
+		font-size: 16px;
+		color: $gray;
+		cursor: pointer;
+	}
+	.icon-edit:hover {
+		color: $dodger-blue;
+	}
+
+	.form-photo {
+
+	}
+	.form-photo__textarea {
+		width: 100%;
+		border: $border-primary;
+		resize: none;
+	}
 }

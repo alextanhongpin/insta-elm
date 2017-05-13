@@ -5,12 +5,13 @@ port module Port exposing (..)
 
 import Types exposing (..)
 
-import Mouse exposing (..)
+-- import Mouse exposing (..)
 -- MOLECULE
 
 
 import Molecule.Comment.Types as CommentTypes exposing (CommentMsg(..))
 import Molecule.Photo.Types as MPhotoTypes exposing(PhotoMsg(..))
+import Molecule.User.Types exposing (User)
 
 import Molecule.Comment.Port as CommentPort exposing (..)
 import Molecule.Photo.Port as PhotoPort exposing (..)
@@ -45,7 +46,7 @@ port signOut : () -> Cmd msg
 -- SUB
 
 
-port authenticateSuccess : (LoginTypes.User -> msg) -> Sub msg
+port authenticateSuccess : (User -> msg) -> Sub msg
 port onAuthenticateStateChange : (String -> msg) -> Sub msg
 
 -- A subscriber to get access token from the localStorage
@@ -103,6 +104,6 @@ subscriptions model =
 
 
     , Sub.map FeedPageMsg (PhotoPort.responsePublicPhotos (FeedTypes.PhotoAction << MPhotoTypes.PublicAll))
-    , Mouse.clicks (\a -> OnMouseClick a)
+    --, Mouse.clicks (\a -> OnMouseClick a)
     ]
 

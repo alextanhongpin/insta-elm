@@ -2,6 +2,8 @@
 module Types exposing (..)
 
 import Navigation exposing (Location)
+import Molecule.User.Types exposing (User)
+
 import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
 import Page.Register.Types as RegisterTypes
@@ -25,7 +27,7 @@ type alias Model =
   , route: Route
   , accessToken : String
   , greet : String
-  , position: Position
+  -- , position: Position
 
   -- Page Model
 
@@ -41,7 +43,7 @@ type alias Model =
   -- Auth Model
 
   , isAuthorized : Bool
-  , user : LoginTypes.User
+  , user : User
   }
 
 
@@ -61,7 +63,7 @@ model route =
   , metadata = Metadata 0 0 "" ""
   , route = route
   , accessToken = ""
-  , position = Position 0 0 
+  -- , position = Position 0 0 
   
   -- Page Model
 
@@ -78,7 +80,7 @@ model route =
 
   , isAuthorized = False
   , greet = ""
-  , user = LoginTypes.User "" "" False "" False ""
+  , user = User "" "" False "" False ""
   }
 
 
@@ -99,7 +101,7 @@ type Msg
   | Logout -- Log the user out
   | LogoutSuccess String
   | Authenticate String
-  | AuthenticateSuccess LoginTypes.User
+  | AuthenticateSuccess User
   | RegisterCallback String
   -- PAGE MSG
   | LoginPageMsg LoginTypes.Msg
@@ -110,7 +112,7 @@ type Msg
   | TopicsPageMsg TopicsTypes.Msg
   | FeedPageMsg FeedTypes.Msg
   | PostPageMsg PostTypes.Msg
-  | OnMouseClick Position -- Global mouse click
+  --| OnMouseClick Position -- Global mouse click
 
 
 

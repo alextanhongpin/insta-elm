@@ -1,37 +1,28 @@
-module Page.Login.Types exposing (Model, Msg(..), model, User)
+module Page.Login.Types exposing (Model, Msg(..), model)
 
-
+import Molecule.User.Types exposing (User)
 
 -- MODEL
 
 
 type alias Model = 
-    { placeholder : String
-    , email : String
+    { email : String
     , password : String
     , error : String
     , isAuthorized : Bool
+    , hasSubmitLogin : Bool
     }
 
-
-type alias User = 
-  { displayName : String
-  , email : String
-  , emailVerified : Bool
-  , photoURL : String
-  , isAnonymous : Bool
-  , uid : String
-}
 
 
 
 model : Model
 model = 
-    { placeholder = ""
-    , email = ""
+    { email = ""
     , password = ""
     , error = ""
     , isAuthorized = False
+    , hasSubmitLogin = False
     }
 
 

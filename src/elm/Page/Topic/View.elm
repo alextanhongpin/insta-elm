@@ -4,9 +4,16 @@ module Page.Topic.View exposing (view)
 -- HTML
 
 
-import Html exposing (Html, br, div, text, h3, h4, input, button, textarea)
-import Html.Attributes exposing (class, type_, placeholder)
+import Html exposing (Html, a, br, div, text, h3, h4, span, input, button, textarea)
+import Html.Attributes exposing (class, type_, placeholder, rows, value, disabled)
+import Html.Events exposing (onClick, onInput)
+
+
+-- ROUTER
+
+
 import Router.Types exposing (Route(..))
+
 
 -- ATOM
 
@@ -23,7 +30,7 @@ import Molecule.Post.View as PostView exposing (view)
 -- PAGE
 
 
-import Page.Topic.Types exposing (Model, Msg(..))
+import Page.Topic.Types exposing (Model, Topic, TopicID, Msg(..))
 
 
 -- VIEW
@@ -32,47 +39,118 @@ import Page.Topic.Types exposing (Model, Msg(..))
 view : Model -> Html Msg
 view model =
     div [ class "page page-topic" ]
-        [ div [ class "container col-8" ] 
-            [ h3 [ class "h3" ] [ text model.topic ]
-            , h4 [ class "h4"] [ text ("Everything about " ++ model.topic)] 
-
-            
-            -- BR
-            , div [ class "br br-200" ] []
-
-
-            , div [ class "form-topic" ]
-                [ input [ type_ "text", placeholder "Enter title" ] []
-                , textarea [ class "form-topic__textarea", placeholder "Enter Topic" ] []
-                , input [ type_ "file" ] []
-                , Icon.view "add_a_photo"
-                , button [ class "" ] [ text "Submit" ]
+        [ div [ class "container col-8" ]
+            [ div [ class "br br-200" ] []
+            , div [ class "button-create-wrapper" ]
+                [ button [ onClick ToggleForm ] [ text "Add Post" ] 
                 ]
-
+            , h3 [ class "h3" ] [ text model.topic ]
+            , h4 [ class "h4"] [ text ("Everything about " ++ model.topic) ] 
 
             -- BR
             , div [ class "br br-200" ] []
 
+            -- The form for creating new posts
+            , formView model
 
-            , div [ class "posts"]
-                [ postViewWrapper model.topic "name"
-                , postViewWrapper model.topic "a"
-                , postViewWrapper model.topic "b"
-                ]
-            ]
-            , div [] [ text "show more" ]
+            -- BR
+            , div [ class "br br-200" ] []
+
+            -- The list of posts
+            -- , postsView model
+
+            , case model.topics of
+                Just topics ->
+                    div [ class "posts" ] (List.map postViewWrapper topics)
+
+                Nothing ->
+                    div [] [ text "Loading..." ]
+
+            , button [ class "load-more", disabled False, onClick LoadMore ] [ text "show more" ]
+            , div [ class "br br-200" ] []
+            , div [ class "br br-200" ] []
+            , div [ class "br br-200" ] []
+            , div [ class "br br-200" ] []
+            , div [ class "br br-200" ] []
+            , div [ class "br br-200" ] []
+        ]
         ]
 
 
 -- SUBVIEW
 
 
-postViewWrapper : String -> String -> Html Msg
-postViewWrapper topic url = 
-    div []
-        [ PostView.view (PostRoute topic url) (GoTo topic url)
-        , div [ class "br br-100" ] []
-        ]
+formView : Model -> Html Msg
+formView model =
+    case model.showForm of
+        Just showForm ->
+            if showForm == True then
+                let
+                    newPost = model.newPost
+
+                    isTitleEmpty
+                        = newPost.title
+                        |> String.trim
+                        |> String.isEmpty
+
+                    isContentEmpty
+                        = newPost.content
+                        |> String.trim
+                        |> String.isEmpty
+
+                    isButtonDisabled = isTitleEmpty || isContentEmpty
+                in
+                    div [ class "form-topic-backdrop" ] [
+                        div [ class "form-topic" ]
+                            [ div [ class "br br-100" ] []
+                            , div [ class "form-topic-header" ]
+                                [ a [ class "form-topic__button-close", onClick HideForm ] [ text "Close" ]
+                                ]
+
+                            , input [ class "form-topic-input"
+                                    , type_ "text"
+                                    , placeholder "Give your post a title..."
+                                    , onInput OnTypeTitle
+                                    , value model.newPost.title
+                                    ] []
+                            , textarea [ rows 5
+                                        , class "form-topic__textarea"
+                                        , placeholder "Write a post..."
+                                        , onInput OnTypeContent
+                                        , value model.newPost.content
+                                        ] []
+                            , div [] [ text (toString(String.length model.newPost.content) ++ " word(s)") ]
+                            , input [ type_ "file" ] []
+                            , Icon.view "add_a_photo"
+                            , button [ class "", disabled isButtonDisabled, onClick SubmitPost ] [ text "Submit" ]
+                            ]
+                            , div [ class "br br-100" ] []
+                        ]
+            else
+                span [] []
+
+        Nothing ->
+            div [ class "form-topic__placeholder-create"
+                , onClick ToggleForm 
+                ] 
+                [ text "Create a new post and share it with others here :)"
+                ]
+
+
+postViewWrapper : (TopicID, Topic) -> Html Msg
+postViewWrapper (id, model) =
+    let
+        topic = model.topic
+        -- url = model.url
+        route = PostRoute topic id
+        topicRoute = TopicRoute topic
+        topicAct = GoToTopic topic
+        act = GoTo topic id
+    in
+        div []
+            [ PostView.view (route) (topicRoute) (topicAct) (act) (model)
+            , div [ class "br br-100" ] []
+            ]
 
 
 

@@ -1,3 +1,35 @@
-.page--register {
+.page-register {
 	text-align: center;
+
+	.page-title {
+		font-size: 24px;
+		font-weight: 300;
+	}
+	.container {
+		text-align: left;
+	}
+
+	.input-group {
+		border: $border-primary;
+		width: 100%;
+	}
+
+	.input-group__label {
+		font-size: 12px;
+		font-weight: bold;
+		padding: 0 $dimension-50;
+	}
+
+	.input-group__input {
+		width: 100%;
+		padding: 0 $dimension-50;
+		height: 30px;
+		border: none;
+		outline: none;
+	}
+
+	.hint.is-error {
+		color: #FF4444;
+		font-size: 12px;
+	}
 }

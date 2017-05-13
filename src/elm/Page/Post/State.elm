@@ -158,14 +158,14 @@ update msg model =
                     | comments = updatedComments
                     , editIndex = "" }, Cmd.none)
         NoOp ->
-            (model, Cmd.none)
+            model ! []
 
         OnBlurEditMenu ->
-            ({ model | showEdit = False}, Cmd.none)
+            { model | showEdit = False } ! [] 
         
         FocusOn id ->
-            --(model, Task.attempt FocusResult (Dom.focus id))
             model ! [ Task.attempt FocusResult (focus id) ]
+        
         FocusResult result ->
             case result of
                 Err (Dom.NotFound id) ->
@@ -174,8 +174,17 @@ update msg model =
                 Ok () ->
                     { model | error = Nothing } ! []
 
+        LoadMore ->
+            let
+                comments = [("4", Comment "Berry" "Amazing" False), ("5", Comment "Harry" "Oh no!" False)] ++ model.comments
+                -- sortedComments = List.sortBy (\(a, _) -> a) comments
+            in
+                { model | comments = comments } ! []
 
-
-
+        OnFocusInputWhileEditing ->
+            { model
+                | isEditing = False
+                , ghostComment = Comment "" "" False
+                , editIndex = "" } ! []
 
 

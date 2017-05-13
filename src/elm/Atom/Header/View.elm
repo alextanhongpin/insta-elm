@@ -6,46 +6,57 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (on, onClick)
 
 import Types exposing (Model, Msg(..))
+
+
+-- ROUTER
+
+
 import Router.Main exposing (reverseRoute, onClickPreventDefault)
 import Router.Types exposing (Route(..))
 
-import Atom.Icon.View as Icon exposing (view)
 
-import Mouse exposing (..)
+--VIEw
+
 
 view : Model -> Html Msg
-view model = 
-    if model.isAuthorized then
-      div [ class "header" ] 
-          [ brand model
-          , div [] 
-              [ a 
-                [ href (reverseRoute FeedRoute)
-                , onClickPreventDefault (NavigateTo FeedRoute) ] 
-                [ text "Feed" ]
-              , a 
-                [ href (reverseRoute ProfileRoute)
-                , onClickPreventDefault (NavigateTo ProfileRoute) ] 
-                [ text "Profile"
-                , Icon.view "person"
-                ]
-              , a 
-                [ href (reverseRoute TopicsRoute)
-                , onClickPreventDefault (NavigateTo TopicsRoute) ]
-                [ text "Topics" ] 
+view model =
+  if model.isAuthorized then
+    div [ class "header" ] 
+        [ brandView model
+        , div []
+            [ div [ class "header-link-group" ] 
+              [ linkView (FeedRoute) ("Feed") (model.route)
+              , linkView (TopicsRoute) ("Groups") (model.route)
+              , linkView (ProfileRoute) ("Profile") (model.route)
+              , div [ class "logout", onClick Logout ] [ text "Logout" ] 
               ]
-          , div [ class "logout", onClick Logout ] [ text "Logout" ] 
-          , div [] [ text (toString model.position.x ++ "," ++toString model.position.y) ]
-          ]
-    else
-      div [ class "header" ]
-          [ brand model
-          , authorizedView model
-          ]
+            ]
+        ]
+  else
+    div [ class "header" ]
+        [ brandView model
+        , authorizedView model
+        ]
 
 
-brand : Model -> Html Msg
-brand model = 
+-- SUBVIEW
+
+
+linkView : Route -> String -> Route -> Html Msg
+linkView route label currentRoute =
+    let
+      className 
+        = if currentRoute == route then "header-link is-selected" 
+        else "header-link"
+    in
+      a 
+      [ class className
+      , href (reverseRoute route)
+      , onClickPreventDefault (NavigateTo route) ] 
+      [ text label ]
+
+brandView : Model -> Html Msg
+brandView model = 
     a [ class "header-brand" 
       , href (reverseRoute HomeRoute)
       , if model.isAuthorized then 

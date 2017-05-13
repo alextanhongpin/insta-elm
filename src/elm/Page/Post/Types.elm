@@ -1,6 +1,14 @@
 module Page.Post.Types exposing (Model, Comment, CommentID, model, Msg(..))
 
+
+-- MOLECULE
+
+
+-- import Molecule.User.Types exposing (User)
+
 import Dom exposing (..)
+
+
 -- MODEL 
 
 
@@ -13,6 +21,10 @@ type alias Model =
     , ghostComment : Comment
     , error : Maybe String
     , owner : String
+    , isOwner : Bool
+    , postOwner : String
+    , topic : Maybe String
+    , postID : Maybe String
     }
 
 
@@ -29,7 +41,11 @@ model =
     , editIndex = ""
     , ghostComment = Comment "" "" False
     , error = Nothing
-    , owner = ""
+    , owner = "John Doe"
+    , isOwner = False
+    , postOwner = "John Doe"
+    , topic = Nothing
+    , postID = Nothing
     }
 
 
@@ -56,6 +72,8 @@ type Msg
     | OnBlurEditMenu
     | FocusOn String
     | FocusResult (Result Dom.Error())
+    | LoadMore
+    | OnFocusInputWhileEditing
 
 
 

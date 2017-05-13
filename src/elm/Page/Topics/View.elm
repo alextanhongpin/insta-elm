@@ -1,10 +1,13 @@
 module Page.Topics.View exposing (view)
 
+
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
+
+import Atom.Break.View exposing (br1, br2, br3)
+
 import Page.Topics.Types exposing (Model, Msg(..))
-
-import Html exposing (Html, a, div, text)
-import Html.Attributes exposing (class, href, style)
-
 import Color exposing (..)
 -- ROUTER
 
@@ -51,14 +54,45 @@ hslColorToCssRgb color =
 
 view : Model -> Html Msg
 view model =
-    div [ class "page page-topics" ]
-        [ div [] (topics 
-                |> List.sort
-                |> List.indexedMap (,)
-                |> List.map listView
-        )
-    ]
+    let
+        topicLen = List.length topics
+        topicLabel = if topicLen == 1 then "topic" else "topics"
 
+        filteredTopics 
+            = topics 
+            |> List.sort
+            |> List.indexedMap (,)
+            |> List.filter (\(_, a) -> String.contains (model.query) (String.toLower a))
+
+        filteredTopicsLen = List.length filteredTopics
+    in
+        div [ class "page page-topics" ]
+            [ div [ class "container col-10"]
+                [ br2
+                , br2
+                , div [ class "form-search-topic" ]
+                    [ input
+                        [ class "input-search-topic"
+                        , type_ "search"
+                        , placeholder "Search a group..."
+                        , onInput Search
+                        , value model.query ] []
+                    ]
+                , br2
+                , div [] [ text (toString(filteredTopicsLen) ++ " out of " ++ toString(topicLen) ++ " " ++ topicLabel) ]
+                , div [ class "topics" ] (List.map listView filteredTopics)
+                , if filteredTopicsLen == 0 then
+                    div [] [ text "There are no content that matches the keyword" ]
+                else
+                    span [] []
+                , br2
+                , br2
+                , br2
+            ]
+        ]
+
+
+-- SUBVIEW
 
 colorGenerator : (Int, Int) -> String
 colorGenerator (length, index) =
@@ -71,17 +105,31 @@ colorGenerator (length, index) =
 
 listView : (Int, String) -> Html Msg
 listView (id, content) =
-    a 
-    [ class "topic"
-    , href (reverseRoute (TopicRoute (String.toLower content)))
-    , onClickPreventDefault (GoToTopic (String.toLower content))]
-    [ div 
-        [ class "topic-image"
-        , style [ ("background-color", colorGenerator((List.length topics), id))]
-        ]
-        [ text content ]
-    , div [ class "br br-100" ] []
-    , div [ class "topic-content" ] [ text (toString(id) ++ content ++ toString(List.length topics)) ]
-    , div [] [ text "No topics yet" ]
-    , div [ class "br br-100" ] []
+    div [ class "topic-wrapper" ] 
+        [ a 
+            [ class "topic"
+            , href (reverseRoute (TopicRoute (String.toLower content)))
+            , onClickPreventDefault (GoToTopic (String.toLower content))]
+            [ div 
+                [ class "topic-image"
+                , style [ ("background-color", colorGenerator((List.length topics), id))]
+                ]
+                [ text content ]
+            , div [ class "br br-100" ] []
+            , div [ class "topic-content" ] [ text (toString(id) ++ content ++ toString(List.length topics)) ]
+            , div [] [ text "No topics yet" ]
+            , div [ class "br br-100" ] []
+            ]
     ]
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,15 +1,17 @@
 port module Page.Login.State exposing (update, loginSuccess, loginError)
 
-import Page.Login.Types exposing (User, Model, Msg(Login, LoginSuccess, LoginError, OnInputEmail, OnInputPassword, OnSubmitLogin))
+import Page.Login.Types exposing (Model, Msg(Login, LoginSuccess, LoginError, OnInputEmail, OnInputPassword, OnSubmitLogin))
+import Molecule.User.Types exposing (User)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Login -> 
-            (model, Cmd.batch [ login model, Cmd.none ])
+            { model | hasSubmitLogin = True } ! [ login model ]
+            --(model, Cmd.batch [ login model, Cmd.none ])
         
         LoginError error ->
-            ({ model | error = error }, Cmd.none)
+            ({ model | error = error, hasSubmitLogin = False }, Cmd.none)
         
         OnInputEmail newEmail -> 
             ({ model | email = newEmail }, Cmd.none)
@@ -17,6 +19,7 @@ update msg model =
         OnInputPassword newPassword ->
             ({ model | password = newPassword }, Cmd.none)
 
+        -- TODO: To be removed
         OnSubmitLogin ->
             if .email model == "john.doe@mail.com" &&
                .password model == "123456" then 

@@ -17,6 +17,16 @@ $background-primary: $alabaster;
 	text-decoration: none;
 	color: inherit;
 }
+
+%icon-edit {
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	cursor: pointer;
+	color: $gray;
+}
+
 .h4 {
 	color: $gray;
 }
@@ -48,3 +58,18 @@ $dimension-300: 30px;
 .br.br-300 {
 	height: $dimension-300;
 }
+
+.button {
+	background: $dodger-blue;
+	color: white;
+	width: 100%;
+	border: none;
+	height: 40px;
+	line-height: 40px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, .25);
+}
+
+.button:disabled {
+	background: $gray;
+}
+
