@@ -261,7 +261,8 @@ update msg model =
     NavigateTo route ->
       case route of
         FeedRoute ->
-          (model, Cmd.batch[requestPublicPhotos (), Navigation.newUrl ((reverseRoute route) )])
+          -- requestPublicPhotos ()
+          (model, Cmd.batch[ Navigation.newUrl ((reverseRoute route) )])
 
         ProfileRoute ->
           if
@@ -270,7 +271,8 @@ update msg model =
             (model, Cmd.none)
           else
             -- Request new photos when the user enter the page
-            (model, Cmd.batch [ ProfileState.requestPhotos (), photoCount (), Navigation.newUrl (reverseRoute route)] )
+            -- ProfileState.requestPhotos (), photoCount ()
+            (model, Cmd.batch [ Navigation.newUrl (reverseRoute route)] )
 
         PhotoRoute photoId ->
           let
@@ -299,14 +301,34 @@ update msg model =
           (model, Navigation.newUrl (reverseRoute route))
 
     Authenticate str -> 
-      ({ model | greet = str}, Cmd.none)
+      --if str == "login" then
+      --  if model.route == LoginRoute then
+      --    let
+      --      newMsg = NavigateTo ProfileRoute
+      --    in
+      --      update newMsg model
+      --  else
+      --    let
+      --      newMsg = NavigateTo model.route
+      --    in
+      --      update newMsg model
+      --else if str == "logout" then
+      --  let
+      --    newMsg = NavigateTo LoginRoute
+      --  in
+      --    update newMsg model
+      --else
+        model ! []
 
     {--Is called when the user is logged in firebase--}
     AuthenticateSuccess user ->
       -- Redirect the user after logging in
       let
         -- msg = NavigateTo ProfileRoute
-        msg = NavigateTo model.route
+        msg = if model.route == LoginRoute then 
+          NavigateTo ProfileRoute
+        else 
+          NavigateTo model.route
         profilePageModel = model.profilePage
         photoPageModel = model.photoPage
         updatedProfilePageModel = 

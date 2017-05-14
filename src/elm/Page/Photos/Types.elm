@@ -1,4 +1,4 @@
-module Page.Photos.Types exposing (Model, model, Msg)
+module Page.Photos.Types exposing (Model, model, Msg(..))
 
 
 -- MODEL

@@ -15,7 +15,14 @@ import Router.Main exposing (reverseRoute, onClickPreventDefault)
 import Router.Types exposing (Route(..))
 
 
---VIEw
+-- CONSTANTS
+
+
+appName : String
+appName = "NewsMap"
+
+
+--VIEW
 
 
 view : Model -> Html Msg
@@ -63,7 +70,7 @@ brandView model =
           onClickPreventDefault (NavigateTo ProfileRoute) 
         else
           onClickPreventDefault (NavigateTo HomeRoute) 
-      ] [ text "InstaElm" ]
+      ] [ text appName ]
 
 
 authorizedView : Model -> Html Msg

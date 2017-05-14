@@ -22,23 +22,16 @@ update msg model =
         ProfilePhotoSuccess photoURL ->
             ({ model | photoURL = photoURL}, Cmd.none)
 
-        ResponsePhotos output ->
-            let
-                --keys = response
-                --    |> List.map .key
+        --ResponsePhotos output ->
+        --    let
+        --        photos = model.photos
+        --        uniqueIds = photos
+        --            |> List.map Tuple.first
 
-                --objs = response
-                --    |> List.map .data
-
-                --output = List.map2 (,) keys objs
-                photos = model.photos
-                uniqueIds = photos
-                    |> List.map Tuple.first
-
-                filteredOutput = List.filter (\(a, b) -> not (List.member a uniqueIds)) output
-                outputphotos = photos ++ filteredOutput
-            in
-                ({ model | photos = outputphotos }, Cmd.none)
+        --        filteredOutput = List.filter (\(a, b) -> not (List.member a uniqueIds)) output
+        --        outputphotos = photos ++ filteredOutput
+        --    in
+        --        ({ model | photos = outputphotos }, Cmd.none)
 
         Progress progress ->
             ({ model | progress = progress}, Cmd.none)
@@ -63,6 +56,9 @@ update msg model =
 
         PhotoCountSuccess count ->
             ({ model | count = count}, Cmd.none)
+
+        _ ->
+            model ! []
 -- PUB
 
 

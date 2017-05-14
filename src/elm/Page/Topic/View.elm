@@ -4,8 +4,8 @@ module Page.Topic.View exposing (view)
 -- HTML
 
 
-import Html exposing (Html, a, br, div, text, h3, h4, span, input, button, textarea)
-import Html.Attributes exposing (class, type_, placeholder, rows, value, disabled)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
 
@@ -120,8 +120,10 @@ formView model =
                                         , value model.newPost.content
                                         ] []
                             , div [] [ text (toString(String.length model.newPost.content) ++ " word(s)") ]
-                            , input [ type_ "file" ] []
-                            , Icon.view "add_a_photo"
+
+                            -- Hidden file inputs
+                            , input [ type_ "file", style [ ("display", "none") ] ] []
+                            , div [] [ text "attach a photo", Icon.view "add_a_photo" ]
                             , button [ class "", disabled isButtonDisabled, onClick SubmitPost ] [ text "Submit" ]
                             ]
                             , div [ class "br br-100" ] []
@@ -130,10 +132,10 @@ formView model =
                 span [] []
 
         Nothing ->
-            div [ class "form-topic__placeholder-create"
-                , onClick ToggleForm 
-                ] 
-                [ text "Create a new post and share it with others here :)"
+            div [ class "form-topic__placeholder-create" ] 
+                [ text "There are no posts yet. "
+                , a [ onClick ToggleForm  ] [ text "Create" ]
+                , text " a new post and share it with others here :)"
                 ]
 
 

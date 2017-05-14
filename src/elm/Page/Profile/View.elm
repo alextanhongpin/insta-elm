@@ -12,11 +12,18 @@ import Json.Decode as Json
 import Atom.Break.View exposing (br1, br2, br3)
 
 
+-- MOLECULE
+
+
+import Molecule.Post.View as PostView exposing (view)
+import Molecule.Post.Types exposing (TopicID, Topic)
+
+
 -- ROUTER
 
 
 import Router.Main exposing (reverseRoute, onClickPreventDefault)
-import Router.Types exposing (Route(PhotoRoute))
+import Router.Types exposing (Route(..))
 
 
 -- VIEW
@@ -45,8 +52,16 @@ view model =
             , br2
             , userView model
             , br2
-            , uploadPhotoView model
-            , photosView model
+            -- , uploadPhotoView model
+            -- , photosView model
+            , postsView model
+            , br2
+
+            , case model.topics of 
+                Just topics ->
+                    div [] (List.map postViewWrapper topics)
+                Nothing ->
+                    div [] [ text "No topics yet" ]
             ]
         ]
 
@@ -100,11 +115,12 @@ isEditingView model =
 userView : Model -> Html Msg
 userView model =
     let 
-        photoCount = toString(model.count) ++ " photos"
+        -- photoCount = toString(model.count) ++ " photos"
         postCount = "53 posts"
+        pointCount = "100 points"
         followerCount = "100 followers"
 
-        countLabel = String.join " | " [photoCount, postCount, followerCount]
+        countLabel = String.join " | " [ postCount, pointCount, followerCount]
     in
         div [ class "user" ] 
             [ label [ class "user-photo", for "profilePhoto",  style (imageCover model.photoURL) ] [ ]
@@ -164,9 +180,37 @@ photoView (key, data) =
             ]
 
 
+postsView : Model -> Html Msg
+postsView model =
+    div []
+        [ div []
+            [ div [] [ text "Sort by" ]
+            , select [] 
+                [ option [] [ text "Latest" ]
+                , option [] [ text "Most voted" ]
+                , option [] [ text "Category" ]
+                ]
+            ]
+        ]
 
 
 
+
+
+postViewWrapper : (TopicID, Topic) -> Html Msg
+postViewWrapper (id, model) =
+    let
+        topic = model.topic
+        -- url = model.url
+        route = PostRoute topic id
+        topicRoute = TopicRoute topic
+        topicAct = GoToTopic topic
+        act = GoTo topic id
+    in
+        div []
+            [ PostView.view (route) (topicRoute) (topicAct) (act) (model)
+            , br1
+            ]
 
 
 

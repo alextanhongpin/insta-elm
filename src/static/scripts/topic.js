@@ -1,5 +1,24 @@
 // Topic.js contains the crud logic for firebase topic resources
 
+// Returns an empty topic model
+
+function TopicModel (props) {
+  // Returns
+  return Object.assign({
+    userId: '',
+    photoUrl: '',
+    displayName: '',
+    title: '',
+    content: '',
+    commentCount: 0,
+    upvoteCount: 0,
+    downvoteCount: 0,
+    topic: '',
+    createdAt: '',
+    updatedAt: ''
+  }, props)
+}
+
 class Topic {
   constructor (firebase, userId, dispatcher) {
     this.firebase = firebase
@@ -15,38 +34,36 @@ class Topic {
       return snapshot.numChildren()
     })
   }
-  create (photoUrl, displayName, alt, content) {
-    var newRef = this.ref.push()
-    var payload = {
+  create ({ photoUrl, displayName, title, topic, content }) {
+    const newRef = this.ref.push()
+    const payload = TopicModel({
       userId: this.userId,
       photoUrl: photoUrl,
       displayName: displayName,
-      alt: alt,
+      title: title,
       content: content,
+      commentCount: 0,
+      upvoteCount: 0,
+      downvoteCount: 0,
+      topic: topic,
       createdAt: new Date().toString(),
       updatedAt: new Date().toString()
-    }
+    })
+
     newRef.set(payload)
-    // this.dispatcher.responsePhotos.send([
-    //   [newRef.key, payload]
-    // ])
+
+    return Promise.resolve([ newRef.key, payload ])
   }
 
   one (id) {
     const ref = this.firebase.database().ref(this.url + '/' + id)
+
     return ref.once('value').then(function (snapshot) {
-      var result = {
-        photoUrl: '',
-        content: '',
-        userId: '',
-        displayName: '',
-        alt: '',
-        createdAt: '',
-        updatedAt: ''
-      }
+      const result = TopicModel()
+
       snapshot.forEach(function (child) {
-        var key = child.key
-        var data = child.val()
+        const key = child.key
+        const data = child.val()
         result[key] = data
       })
       return [id, result]
@@ -172,4 +189,6 @@ class Topic {
     })
   }
 }
+
+module.exports = Topic
 

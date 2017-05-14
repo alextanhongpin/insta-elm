@@ -81,7 +81,7 @@ subscriptions model =
     -- Profile Page
 
 
-    , Sub.map ProfilePageMsg (ProfileState.responsePhotos ProfileTypes.ResponsePhotos)
+    -- , Sub.map ProfilePageMsg (ProfileState.responsePhotos ProfileTypes.ResponsePhotos)
     , Sub.map ProfilePageMsg (ProfileState.profilePhotoSuccess ProfileTypes.ProfilePhotoSuccess)
     , Sub.map ProfilePageMsg (ProfileState.progress ProfileTypes.Progress)
     , Sub.map ProfilePageMsg (ProfileState.uploadProgress ProfileTypes.UploadProgress)
@@ -102,8 +102,8 @@ subscriptions model =
 
     -- Feed Page
 
-
-    , Sub.map FeedPageMsg (PhotoPort.responsePublicPhotos (FeedTypes.PhotoAction << MPhotoTypes.PublicAll))
+    -- NOTE: Even after commenting, you should remove the Cmd from the respective route. Here we are only hiding the response sub
+    -- , Sub.map FeedPageMsg (PhotoPort.responsePublicPhotos (FeedTypes.PhotoAction << MPhotoTypes.PublicAll))
     --, Mouse.clicks (\a -> OnMouseClick a)
     ]
 

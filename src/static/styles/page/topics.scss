@@ -16,6 +16,10 @@
 		width: 100%;
 	}
 
+	.topic-count {
+		padding: 0 $dimension-50;
+	}
+
 	.topic {
 		@extend %no-link;
 		border: $border-primary;

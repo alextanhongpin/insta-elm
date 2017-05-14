@@ -1,5 +1,12 @@
 module Page.Profile.Types exposing (model, Model, PhotoInfo, Msg(..))
 
+
+import Molecule.Post.Types exposing (TopicID, Topic)
+
+
+-- MODEL
+
+
 type alias Model = 
     { displayName : String
     , ghostDisplayName : String
@@ -13,6 +20,7 @@ type alias Model =
     , enableEditProfile : Bool
     , count : Int
     , uid : String
+    , topics : Maybe (List (TopicID, Topic))
     }
 
 
@@ -30,6 +38,7 @@ model =
     , enableEditProfile = False
     , count = 0
     , uid = ""
+    , topics = Just [ ("1", Topic "John Doe" "Today" "Today" "Hello World" "This is a hello world content" "apple" 0 "none" "") ]
     }
 
 type alias PhotoInfo =
@@ -48,12 +57,16 @@ type alias NodeID = String
 --    , data : PhotoInfo
 --    }
 
+
+-- MSG
+
+
 type Msg 
     = NavigateTo String
     | UploadFile NodeID PhotoInfo
     | ProfilePhoto String
     | ProfilePhotoSuccess String
-    | ResponsePhotos (List (String, PhotoInfo))
+    --| ResponsePhotos (List (String, PhotoInfo))
     | Progress Float
     | Caption String
     | UploadProgress Float
@@ -62,4 +75,6 @@ type Msg
     | DisplayName String
     | SetDisplayNameSuccess String
     | PhotoCountSuccess Int
+    | GoToTopic String
+    | GoTo String String
 

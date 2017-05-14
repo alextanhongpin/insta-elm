@@ -207,11 +207,7 @@ type EventMsg
 
 ### User Stories
 
-Page Login
-- can authenticate users
-- can display error message if login fail
+NewsMap
 
-Page Photo
-- can view photo
-- can favorite photo
-- can comment (CRUD)
+- As a reporter,
+- I want to report trending events based on location.

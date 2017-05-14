@@ -6,6 +6,11 @@ require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js')   /
 // inject bundled Elm app into div#main
 var Elm = require('../elm/Main')
 var app = Elm.Main.embed(document.getElementById('main'))
+var Comment = require('./scripts/comment.js')
+var Photo = require('./scripts/photo.js')
+// var Topic = require('./scripts/topic.js')
+var Topic = {}
+var User = require('./scripts/user.js')
 
 // Holds the firebase context model
 var models = {}
@@ -29,7 +34,7 @@ app.ports.authenticate.subscribe(function () {
         isAnonymous: user.isAnonymous || false,
         uid: user.uid || ''
       }
-      app.ports.onAuthenticateStateChange.send('success')
+      app.ports.onAuthenticateStateChange.send('login')
       app.ports.authenticateSuccess.send(userRecord)
       var providerData = user.providerData
 
@@ -43,7 +48,7 @@ app.ports.authenticate.subscribe(function () {
       Object.keys(models).forEach(function (key) {
         models[key] = null
       })
-      app.ports.onAuthenticateStateChange.send('fail')
+      app.ports.onAuthenticateStateChange.send('logout')
     }
   })
 })

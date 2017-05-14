@@ -49,3 +49,6 @@ class Comment {
     return ref.set(comment)
   }
 }
+
+module.exports = Comment
+

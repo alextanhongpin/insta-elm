@@ -7,7 +7,9 @@ module Page.Feed.View exposing (view)
 import Atom.Break.View exposing (br1, br2, br3)
 -- import Atom.Icon.View as Icon exposing (view)
 
+
 -- MOLECULE
+
 
 import Molecule.Post.View as PostView exposing (view)
 import Molecule.Photo.Types exposing(PhotoID, Photo)
@@ -53,14 +55,21 @@ view model =
             --    , input [ type_ "search", placeholder "Search category" ] []
             --    , button [] [ text "submit" ]
             --    ]
-
+            , div []
+                [ select []
+                    [ option [] [ text "Latest" ]
+                    , option [] [ text "Most voted" ]
+                    , option [] [ text "Popular" ]
+                    ]
+                ]
+            , br2
             , case model.topics of
                 Just topics ->
                     div [] (List.map postViewWrapper topics)
                 Nothing ->
                     span [] [ text "no topics" ]
 
-            , div [] (List.map photoThumbnailView model.photos) 
+            -- , div [] (List.map photoThumbnailView model.photos) 
             ]
         ]
 
@@ -68,17 +77,17 @@ view model =
 -- SUBVIEW
 
 
-photoThumbnailView : (PhotoID, Photo) -> Html Msg
-photoThumbnailView (id, model) =
-    div []
-        [ img [ src model.photoUrl, class "photo-thumbnail" ] []
-        , div [] [ text model.userId ]
-        , div [] [ text model.createdAt ]
-        , div [] [ text model.updatedAt ]
-        , div [] [ text model.displayName ]
-        , div [] [ text model.userId ]
-        , div [] [ text model.alt ]
-        ]
+--photoThumbnailView : (PhotoID, Photo) -> Html Msg
+--photoThumbnailView (id, model) =
+--    div []
+--        [ img [ src model.photoUrl, class "photo-thumbnail" ] []
+--        , div [] [ text model.userId ]
+--        , div [] [ text model.createdAt ]
+--        , div [] [ text model.updatedAt ]
+--        , div [] [ text model.displayName ]
+--        , div [] [ text model.userId ]
+--        , div [] [ text model.alt ]
+--        ]
 
 
 postViewWrapper : (TopicID, Topic) -> Html Msg

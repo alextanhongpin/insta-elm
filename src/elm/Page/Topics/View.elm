@@ -5,10 +5,15 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 
+
+-- ATOM
+
+import Atom.Color as Color exposing (..)
 import Atom.Break.View exposing (br1, br2, br3)
 
 import Page.Topics.Types exposing (Model, Msg(..))
-import Color exposing (..)
+
+
 -- ROUTER
 
 
@@ -31,22 +36,6 @@ topics = ["Computer", "Software", "Hardware", "Apple", "Android", "Mobile Phones
 
 classifieds : List String
 classifieds = [ "Job enlistment", "Properties", "Business for Sale", "Services Noticeboard", "Events and gatherings" ]
-
-
-colorToCssRgb : Color.Color -> String
-colorToCssRgb color =
-    let
-        rgb = Color.toRgb(color)
-    in
-        "rgb(" ++ toString(rgb.red) ++ "," ++ toString(rgb.green) ++ "," ++ toString(rgb.blue) ++ ")"
-
-hslColorToCssRgb : Color.Color -> String
-hslColorToCssRgb color =
-    let
-        rgb = Color.toRgb(color)
-    in
-        "rgb(" ++ toString(rgb.red) ++ "," ++ toString(rgb.green) ++ "," ++ toString(rgb.blue) ++ ")"
-
 
 
 -- VIEW
@@ -79,8 +68,10 @@ view model =
                         , value model.query ] []
                     ]
                 , br2
-                , div [] [ text (toString(filteredTopicsLen) ++ " out of " ++ toString(topicLen) ++ " " ++ topicLabel) ]
+                , br2
+                , div [ class "topic-count" ] [ text (toString(filteredTopicsLen) ++ " out of " ++ toString(topicLen) ++ " " ++ topicLabel) ]
                 , div [ class "topics" ] (List.map listView filteredTopics)
+
                 , if filteredTopicsLen == 0 then
                     div [] [ text "There are no content that matches the keyword" ]
                 else
@@ -94,14 +85,6 @@ view model =
 
 -- SUBVIEW
 
-colorGenerator : (Int, Int) -> String
-colorGenerator (length, index) =
-    let 
-        multiplier = floor(toFloat(360) / toFloat(length))
-        degree = toFloat(multiplier * index)
-    in
-        hslColorToCssRgb(Color.hsl (degrees degree) 1 0.75)
-
 
 listView : (Int, String) -> Html Msg
 listView (id, content) =
@@ -112,12 +95,13 @@ listView (id, content) =
             , onClickPreventDefault (GoToTopic (String.toLower content))]
             [ div 
                 [ class "topic-image"
-                , style [ ("background-color", colorGenerator((List.length topics), id))]
+                , style [ ("background-color", Color.generate((List.length topics), id))]
                 ]
                 [ text content ]
             , div [ class "br br-100" ] []
-            , div [ class "topic-content" ] [ text (toString(id) ++ content ++ toString(List.length topics)) ]
-            , div [] [ text "No topics yet" ]
+            -- , div [ class "topic-content" ] [ text (toString(id) ++ content ++ toString(List.length topics)) ]
+            -- , div [] [ text "No topics yet" ]
+            , div [] [ text "Description" ]
             , div [ class "br br-100" ] []
             ]
     ]

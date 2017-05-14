@@ -1,6 +1,6 @@
 module Page.Photos.State exposing (update)
 
-import Page.Photos.Types exposing (Model, Msg)
+import Page.Photos.Types exposing (Model, Msg(..))
 
 update : Msg -> Model -> (Model, Cmd Msg)
 
