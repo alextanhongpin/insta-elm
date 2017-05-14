@@ -25,12 +25,12 @@ import Atom.Icon.View as Icon exposing (view)
 
 
 import Molecule.Post.View as PostView exposing (view)
-
+import Molecule.Post.Types exposing (Topic, TopicID)
 
 -- PAGE
 
 
-import Page.Topic.Types exposing (Model, Topic, TopicID, Msg(..))
+import Page.Topic.Types exposing (Model, Msg(..))
 
 
 -- VIEW

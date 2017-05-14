@@ -15,7 +15,7 @@ import Page.Post.Types as PostTypes
 
 import Router.Types exposing (Route)
 
-import Mouse exposing (..)
+
 -- Model
 
 

@@ -15,6 +15,7 @@ import Port exposing (..)
 
 import Page.Login.State as LoginState
 import Page.Photo.State as PhotoState
+import Page.Photos.State as PhotosState
 import Page.Profile.State as ProfileState
 import Page.Register.State as RegisterState
 import Page.Topic.State as TopicState
@@ -28,6 +29,7 @@ import Page.Post.State as PostState
 
 import Page.Login.Types as LoginTypes
 import Page.Photo.Types as PhotoTypes
+import Page.Photos.Types as PhotosTypes
 import Page.Profile.Types as ProfileTypes
 import Page.Feed.Types as FeedTypes
 import Page.Topic.Types as TopicTypes
@@ -281,7 +283,7 @@ update msg model =
         TopicRoute topic ->
           let
             pageModel = model.topicPage
-            newPageModel = { pageModel | topic = topic }
+            newPageModel = { pageModel | topic = topic, topics = Just [] }
           in
             ({ model | topicPage = newPageModel }, Navigation.newUrl (reverseRoute route))
 

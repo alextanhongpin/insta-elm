@@ -14,3 +14,5 @@ update msg model =
             case childMsg of
                 PublicAll photos ->
                     ({ model | photos = photos }, Cmd.none)
+        GoTo topic id ->
+            model ! []

@@ -18,12 +18,32 @@
 		display: inline-block;
 	}
 
-	.grid {
-		height: 200px;
-		width: 200px;
+	.photos {
+		@extend %flex;
+		flex-wrap: wrap;
+		width: 100%;
+		border: $border-primary;
+	}
+	.photo-wrapper {
+		display: block;
+		width: calc(100% / 4);
+		padding: $dimension-50;
+	}
+	// .photo-wrapper:nth-child(4n + 1) {
+	// 	padding-left: 0;
+	// }
+	// .photo-wrapper:nth-child(4n) {
+	// 	padding-right: 0;
+	// }
+
+	.photo {
+		height: 0;
+		padding-top: 100%;
+		width: 100%;
+		// padding-top: calc(100% / 4);
 		display: inline-block;
-		background: #dcdcdc;
-		margin: 5px;
+		background: $alto;
+		border: $border-primary;
 	}
 
 	.icon-edit {

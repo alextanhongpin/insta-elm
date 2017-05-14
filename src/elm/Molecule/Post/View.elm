@@ -38,6 +38,6 @@ view route topicRoute topicAct act model =
             , div [ class "br br-100" ] []
             
             , div [ class "post-item__content-footer"]
-                [ text ((toString model.commentCount) ++ " comments | share | save") ]
+                [ text ((toString model.commentCount) ++ " comments | share | like") ]
             ]
         ]

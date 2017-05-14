@@ -148,7 +148,7 @@ uploadPhotoView model =
 
 photosView : Model -> Html Msg
 photosView model = 
-    div [] (List.map photoView model.photos)
+    div [ class "photos" ] (List.map photoView model.photos)
 
 
 photoView : (String, PhotoInfo) -> Html Msg
@@ -157,9 +157,10 @@ photoView (key, data) =
         url = reverseRoute (PhotoRoute key)
     in
         a [ id key
+          , class "photo-wrapper"
           , href url 
           , onClickPreventDefault (NavigateTo key)
-          ] [ img [ class "grid", src data.photoUrl ] []
+          ] [ div [ class "photo", style (imageCover data.photoUrl) ] []
             ]
 
 

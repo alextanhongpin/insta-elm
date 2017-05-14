@@ -1,7 +1,10 @@
 module Page.Topic.Types exposing (..)
 
 
+import Molecule.Post.Types exposing (TopicID, Topic)
+
 -- MODEL
+
 
 mockTopics : List (TopicID, Topic)
 mockTopics = 
@@ -15,17 +18,17 @@ type alias Model =
     , owner : String
     }
 
-type alias TopicID = String
-type alias Topic =
-    { owner : String
-    , createdAt : String
-    , updatedAt : String
-    , title : String
-    , content : String
-    , topic : String
-    , commentCount : Int
-    , url : String
-    , photoURL : String }
+--type alias TopicID = String
+--type alias Topic =
+--    { owner : String
+--    , createdAt : String
+--    , updatedAt : String
+--    , title : String
+--    , content : String
+--    , topic : String
+--    , commentCount : Int
+--    , url : String
+--    , photoURL : String }
 
 
 model : Model

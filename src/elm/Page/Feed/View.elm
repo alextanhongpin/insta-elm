@@ -1,11 +1,17 @@
 module Page.Feed.View exposing (view)
 
 
+-- ATOM
+
+
+import Atom.Break.View exposing (br1, br2, br3)
+-- import Atom.Icon.View as Icon exposing (view)
+
 -- MOLECULE
 
-
+import Molecule.Post.View as PostView exposing (view)
 import Molecule.Photo.Types exposing(PhotoID, Photo)
-
+import Molecule.Post.Types exposing (TopicID, Topic)
 
 -- PAGE
 
@@ -16,66 +22,51 @@ import Page.Feed.Types exposing (Model, Msg(..))
 -- DEPENDENCIES
 
 
-import Html exposing (Html, a, br, i, button, div, text, img, input, label)
-import Html.Attributes exposing (class, type_, placeholder, href, src)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 
-import Router.Main exposing (reverseRoute, onClickPreventDefault)
-import Router.Types exposing (Route(FeedRoute))
+-- import Router.Main exposing (reverseRoute, onClickPreventDefault)
+import Router.Types exposing (Route(..))
 
 view : Model -> Html Msg
 view model = 
-    div [ class "page page-feed"] 
-        [ div [] 
-            [ a [ href (reverseRoute FeedRoute)
-                , onClickPreventDefault (GoToTopic "Hello")
-                ] 
-                [ text "add a new post"
-                , i [ class "material-icons"] [ text "add_circle_outline" ] 
-                ]
-            , a [] [ text "view all topics" ]      
-            , input [ type_ "search", placeholder "Search for a topic" ] [] 
-            ]
-        , div [] 
-            [ label [] [ text "create topic" ]
-            , input [ type_ "text", placeholder "Enter text" ] []
-            , input [ type_ "file" ] []
-            , input [ type_ "text", placeholder "Photo Caption"] []
-            , input [ type_ "search", placeholder "Search category" ] []
-            , button [] [ text "submit" ]
-            ]
-        , div [ class "feed col-12" ]
-            [ feedWithWrapperView
-            , feedWithWrapperView
-            , feedWithWrapperView
-            ]
-        , div [] (List.map photoThumbnailView model.photos) 
-        ]
+    div [ class "page page-feed"]
+        [ div [ class "container col-8" ] 
+            [ br2
+            , br2
+            , div [ class "page-title" ] [ text "Feed" ]
+            , br2
+            --, div []
+            --    [ a [ href (reverseRoute FeedRoute)
+            --        , onClickPreventDefault (GoToTopic "Hello")
+            --        ] 
+            --        [ text "add a new post"
+            --        , Icon.view "add_circle_outline"
+            --        ]
+            --    , a [] [ text "view all topics" ]      
+            --    ]
+            --, div [] 
+            --    [ label [] [ text "create topic" ]
+            --    , input [ type_ "text", placeholder "Enter text" ] []
+            --    , input [ type_ "file" ] []
+            --    , input [ type_ "text", placeholder "Photo Caption"] []
+            --    , input [ type_ "search", placeholder "Search category" ] []
+            --    , button [] [ text "submit" ]
+            --    ]
 
+            , case model.topics of
+                Just topics ->
+                    div [] (List.map postViewWrapper topics)
+                Nothing ->
+                    span [] [ text "no topics" ]
 
--- SUBVIEWS
-
-
-feedWithWrapperView : Html Msg
-feedWithWrapperView = 
-    div [ class "feed-item-wrapper"] 
-        [ feedView
-        , div [ class "br br-200" ] []
-        ]
-
-
-feedView : Html Msg
-feedView = 
-    div [ class "feed-item" ]
-        [ div [ class "feed-item__image" ] [ img [] [] ]
-        , div [ class "feed-item__content" ] 
-            [ a [ href (reverseRoute FeedRoute)
-                , onClickPreventDefault (GoToTopic "Hello")
-                , class "feed-item__content-header" ] [ text "This guy is rich. Find out why." ]
-            , div [ class "feed-item__content-body" ] [ text "submitted 7 hours ago by someone to", a [] [ text "r/golang" ]]
-            , div [ class "br br-100" ] []
-            , div [ class "feed-item__content-footer"] [ text "100 comments | share | save"]
+            , div [] (List.map photoThumbnailView model.photos) 
             ]
         ]
+
+
+-- SUBVIEW
+
 
 photoThumbnailView : (PhotoID, Photo) -> Html Msg
 photoThumbnailView (id, model) =
@@ -88,3 +79,23 @@ photoThumbnailView (id, model) =
         , div [] [ text model.userId ]
         , div [] [ text model.alt ]
         ]
+
+
+postViewWrapper : (TopicID, Topic) -> Html Msg
+postViewWrapper (id, model) =
+    let
+        topic = model.topic
+        -- url = model.url
+        route = PostRoute topic id
+        topicRoute = TopicRoute topic
+        topicAct = GoToTopic topic
+        act = GoTo topic id
+    in
+        div []
+            [ PostView.view (route) (topicRoute) (topicAct) (act) (model)
+            , br1
+            ]
+
+
+
+

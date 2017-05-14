@@ -1,7 +1,7 @@
 module Page.Topic.State exposing (update)
 
-
-import Page.Topic.Types exposing (Model, Topic, Msg(..))
+import Molecule.Post.Types exposing (Topic)
+import Page.Topic.Types exposing (Model, Msg(..))
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
