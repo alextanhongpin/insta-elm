@@ -211,3 +211,7 @@ NewsMap
 
 - As a reporter,
 - I want to report trending events based on location.
+
+
+- As a user,
+- I want to be notified when there are news nearby me

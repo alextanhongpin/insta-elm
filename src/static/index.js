@@ -1,23 +1,28 @@
 // pull in desired CSS/SASS files
 require('./styles/main.scss')
-var $ = jQuery = require('../../node_modules/jquery/dist/jquery.js')           // <--- remove if jQuery not needed
+const $ = jQuery = require('../../node_modules/jquery/dist/jquery.js')           // <--- remove if jQuery not needed
 require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js')   // <--- remove if Bootstrap's JS not needed
 
 // inject bundled Elm app into div#main
-var Elm = require('../elm/Main')
-var app = Elm.Main.embed(document.getElementById('main'))
-var Comment = require('./scripts/comment.js')
-var Photo = require('./scripts/photo.js')
+const Elm = require('../elm/Main')
+const app = Elm.Main.embed(document.getElementById('main'))
+const Comment = require('./scripts/comment.js')
+const Photo = require('./scripts/photo.js')
 // var Topic = require('./scripts/topic.js')
-var Topic = {}
-var User = require('./scripts/user.js')
+const Topic = require('./scripts/topic.js')
+const User = require('./scripts/user.js')
 
 // Holds the firebase context model
-var models = {}
+const models = {}
 
-var config = {
+const config = {
     // Place firebase config here
-
+  apiKey: 'AIzaSyCVDboPN9FMcAaFf3teK4wxhAgf0VePCm8',
+  authDomain: 'instaelm-9f923.firebaseapp.com',
+  databaseURL: 'https://instaelm-9f923.firebaseio.com',
+  projectId: 'instaelm-9f923',
+  storageBucket: 'instaelm-9f923.appspot.com',
+  messagingSenderId: '838973904562'
 }
 firebase.initializeApp(config)
 
@@ -26,7 +31,7 @@ firebase.initializeApp(config)
 app.ports.authenticate.subscribe(function () {
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-      var userRecord = {
+      const userRecord = {
         displayName: user.displayName || '',
         email: user.email || '',
         emailVerified: user.emailVerified || false,
@@ -36,7 +41,7 @@ app.ports.authenticate.subscribe(function () {
       }
       app.ports.onAuthenticateStateChange.send('login')
       app.ports.authenticateSuccess.send(userRecord)
-      var providerData = user.providerData
+      const providerData = user.providerData
 
       // Setup models
       models.comment = new Comment(firebase, user.uid, app.ports)
@@ -56,14 +61,14 @@ app.ports.authenticate.subscribe(function () {
 app.ports.register.subscribe(function (user) {
   firebase.auth().createUserWithEmailAndPassword(user.email, user.password).catch(function (error) {
     // Handle Errors here.
-    var errorCode = error.code
-    var errorMessage = error.message
+    const errorCode = error.code
+    const errorMessage = error.message
     // app.ports.onRegisterError.send()
     // ...
   }).then(function (data) {
     // Create a user reference
-    var ref = firebase.database().ref('users')
-    var newRef = ref.push()
+    const ref = firebase.database().ref('users')
+    const newRef = ref.push()
     newRef.set({
       email: user.email,
       createdAt: new Date().toString(),
@@ -76,7 +81,7 @@ app.ports.register.subscribe(function (user) {
 app.ports.login.subscribe(function (user) {
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
   .then(function (data) {
-    var userRecord = {
+    const userRecord = {
       displayName: user.displayName || '',
       email: user.email || '',
       emailVerified: user.emailVerified || false,
@@ -88,8 +93,8 @@ app.ports.login.subscribe(function (user) {
   })
   .catch(function (error) {
     // Handle Errors here.
-    var errorCode = error.code
-    var errorMessage = error.message
+    const errorCode = error.code
+    const errorMessage = error.message
     app.ports.loginError.send(errorMessage)
   })
 })
@@ -196,3 +201,6 @@ app.ports.updateComment.subscribe(function ([commentId, comment]) {
 
 // TOPICS
 
+app.ports.createTopic.subscribe(topic => {
+  console.log('createTopic', topic)
+})

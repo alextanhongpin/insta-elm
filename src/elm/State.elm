@@ -125,26 +125,40 @@ update msg model =
             , Cmd.map LoginPageMsg loginCmd
             )
 
+
+    {-- PHOTO PAGE
+        
+      * Intercept messages from the photo page
+      * Add custom logic/modify model/trigger commands 
+
+    --}
+
+
     PhotoPageMsg childMsg ->
       case childMsg of
         PhotoTypes.DeletePhotoSuccess photoID ->
           let
-            profilePageModel = model.profilePage
-            photos = profilePageModel.photos
-            filteredPhotos = List.filter (\(a, b) -> a /= photoID) photos
-            msg = NavigateTo ProfileRoute
-            updatedProfileModel = { profilePageModel | photos = filteredPhotos}
-            updatedModel = { model | profilePage = updatedProfileModel}
+            childModel = model.profilePage
+            newPhotos = List.filter (\(a, b) -> a /= photoID) childModel.photos
+            newMsg = NavigateTo ProfileRoute
+            newChildModel = { childModel | photos = newPhotos }
+            newModel = { model | profilePage = newChildModel}
           in
-            update msg updatedModel
+            update newMsg newModel
         _ ->
           let
-            ( photoModel, photoCmd ) = 
+            ( childModel, childCmd ) = 
              PhotoState.update childMsg model.photoPage
           in
-            ({ model | photoPage = photoModel }
-            , Cmd.map PhotoPageMsg photoCmd
-            )
+            { model | photoPage = childModel } ! [ Cmd.map PhotoPageMsg childCmd ]
+
+
+    {-- REGISTER PAGE
+        
+      * Intercept messages from the register page
+
+    --}
+
 
     RegisterPageMsg childMsg ->
       case childMsg of
@@ -156,6 +170,14 @@ update msg model =
             ({ model | registerPage = registerModel }
             , Cmd.map RegisterPageMsg registerCmd
             )
+
+
+    {-- FEED PAGE
+        
+      * Intercept messages from the feed page
+
+    --}
+
 
     FeedPageMsg childMsg ->
       case childMsg of
@@ -174,6 +196,14 @@ update msg model =
             , Cmd.map FeedPageMsg feedCmd
             )
 
+
+    {-- TOPIC PAGE
+        
+      * Intercept messages from the feed page
+
+    --}
+
+
     -- GET /topics/:id
     TopicPageMsg childMsg ->
       case childMsg of
@@ -188,7 +218,8 @@ update msg model =
             msg = NavigateTo (TopicRoute topic)
           in
             update msg model
-
+        --TopicTypes.TopicAction childMsg ->
+        --  model ! []
         _ -> 
           let
             ( topicModel, topicCmd ) = 
@@ -197,6 +228,14 @@ update msg model =
             ({ model | topicPage = topicModel }
             , Cmd.map TopicPageMsg topicCmd
             )
+
+
+    {-- TOPICS PAGE
+        
+      * Intercept messages from the feed page
+
+    --}
+
 
     TopicsPageMsg childMsg ->
       case childMsg of
@@ -213,6 +252,15 @@ update msg model =
             ({ model | topicsPage = topicsModel }
             , Cmd.map TopicsPageMsg topicsCmd
             )
+
+
+    {-- POST PAGE
+        
+      * Intercept messages from the feed page
+
+    --}
+
+
     PostPageMsg childMsg ->
       case childMsg of
         _ -> 
@@ -223,6 +271,14 @@ update msg model =
             ({ model | postPage = childModel }
             , Cmd.map PostPageMsg childCmd
             )
+
+
+    {-- PROFILE PAGE
+        
+      * Intercept messages from the feed page
+
+    --}
+
 
     ProfilePageMsg childMsg ->
       case childMsg of
@@ -255,50 +311,63 @@ update msg model =
             )
 
 
-    -- NAVIGATION
+
+    {-- NAVIGATION
+        
+      * Handle the core navigation of the app 
+      * Uses HTML5 History API
+      * Logic here will execute before going to the route (before hook)
+
+    --}
 
 
     NavigateTo route ->
-      case route of
-        FeedRoute ->
-          -- requestPublicPhotos ()
-          (model, Cmd.batch[ Navigation.newUrl ((reverseRoute route) )])
+      let
+        navigate = Navigation.newUrl (reverseRoute route)
+      in
+        case route of
+          FeedRoute ->
+            -- requestPublicPhotos ()
+            --let
+            --  sub = Navigation.newUrl (reverseRoute route)
+            --in 
+            model ! [ Cmd.batch [ navigate ] ]
 
-        ProfileRoute ->
-          if
-            model.route == route && not (List.isEmpty model.profilePage.photos)
-          then
-            (model, Cmd.none)
-          else
-            -- Request new photos when the user enter the page
-            -- ProfileState.requestPhotos (), photoCount ()
-            (model, Cmd.batch [ Navigation.newUrl (reverseRoute route)] )
+          ProfileRoute ->
+            if
+              model.route == route && not (List.isEmpty model.profilePage.photos)
+            then
+              model ! []
+            else
+              -- Request new photos when the user enter the page
+              -- ProfileState.requestPhotos (), photoCount ()
+              model ! [ Cmd.batch [ navigate ] ]
 
-        PhotoRoute photoId ->
-          let
-            pageModel = model.photoPage
-            -- Reset model when entering the page
-            newPageModel = { pageModel | comments = [] }
-          in
-            ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, Navigation.newUrl (reverseRoute route)] )
+          PhotoRoute photoId ->
+            let
+              pageModel = model.photoPage
+              -- Reset model when entering the page
+              newPageModel = { pageModel | comments = [] }
+            in
+              ({ model | photoPage = newPageModel }, Cmd.batch [ requestPhoto photoId, CommentPort.requestComments photoId, navigate ] )
 
-        TopicRoute topic ->
-          let
-            pageModel = model.topicPage
-            newPageModel = { pageModel | topic = topic, topics = Just [] }
-          in
-            ({ model | topicPage = newPageModel }, Navigation.newUrl (reverseRoute route))
+          TopicRoute topic ->
+            let
+              pageModel = model.topicPage
+              newPageModel = { pageModel | topic = topic, topics = Just [] }
+            in
+              { model | topicPage = newPageModel } ! [ navigate ]
 
-        PostRoute topic id ->
-          let
-            pageModel = model.postPage
-            newPageModel = { pageModel | topic = Just(topic), postID = Just(id) }
-          in
-            { model | postPage = newPageModel } ! [ Navigation.newUrl (reverseRoute route) ]
+          PostRoute topic id ->
+            let
+              pageModel = model.postPage
+              newPageModel = { pageModel | topic = Just(topic), postID = Just(id) }
+            in
+              { model | postPage = newPageModel } ! [ navigate ]
 
-        _ ->
-        -- Reset the state when go to a new page
-          (model, Navigation.newUrl (reverseRoute route))
+          _ ->
+          -- Reset the state when go to a new page
+            model ! [ navigate ]
 
     Authenticate str -> 
       --if str == "login" then

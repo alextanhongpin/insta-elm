@@ -6,15 +6,19 @@ port module Port exposing (..)
 import Types exposing (..)
 
 -- import Mouse exposing (..)
+
 -- MOLECULE
 
 
 import Molecule.Comment.Types as CommentTypes exposing (CommentMsg(..))
 import Molecule.Photo.Types as MPhotoTypes exposing(PhotoMsg(..))
 import Molecule.User.Types exposing (User)
+import Molecule.Post.Types as PostTypes exposing (..)
+
 
 import Molecule.Comment.Port as CommentPort exposing (..)
 import Molecule.Photo.Port as PhotoPort exposing (..)
+import Molecule.Post.Port as PostPort exposing (..)
 
 
 
@@ -22,6 +26,7 @@ import Molecule.Photo.Port as PhotoPort exposing (..)
 
 
 import Page.Photo.Types as PhotoTypes
+import Page.Topic.Types as TopicTypes
 import Page.Profile.Types as ProfileTypes
 import Page.Login.Types as LoginTypes
 import Page.Feed.Types as FeedTypes
@@ -33,7 +38,7 @@ import Page.Feed.Types as FeedTypes
 import Page.Login.State as LoginState
 import Page.Profile.State as ProfileState
 import Page.Register.State as RegisterState
-
+import Page.Topic.State as TopicState
 import Port.Profile as ProfilePort exposing (..)
 
 -- PUB
@@ -71,14 +76,14 @@ subscriptions model =
     --}
     
 
-    -- Login Page
+    -- LOGIN PAGE
 
 
     , Sub.map LoginPageMsg (LoginState.loginSuccess LoginTypes.LoginSuccess)
     , Sub.map LoginPageMsg (LoginState.loginError LoginTypes.LoginError)
     
 
-    -- Profile Page
+    -- PROFILE PAGE
 
 
     -- , Sub.map ProfilePageMsg (ProfileState.responsePhotos ProfileTypes.ResponsePhotos)
@@ -90,7 +95,7 @@ subscriptions model =
     , Sub.map ProfilePageMsg (PhotoPort.photoCountSuccess ProfileTypes.PhotoCountSuccess)
     
 
-    -- Photo Page
+    -- PHOTO PAGE
 
 
     , Sub.map PhotoPageMsg (PhotoPort.responsePhoto PhotoTypes.ResponsePhoto)
@@ -100,10 +105,16 @@ subscriptions model =
     , Sub.map PhotoPageMsg (CommentPort.updateCommentSuccess (PhotoTypes.CommentAction << CommentTypes.UpdateCallback))
 
 
-    -- Feed Page
+    -- FEED PAGE
+
 
     -- NOTE: Even after commenting, you should remove the Cmd from the respective route. Here we are only hiding the response sub
     -- , Sub.map FeedPageMsg (PhotoPort.responsePublicPhotos (FeedTypes.PhotoAction << MPhotoTypes.PublicAll))
     --, Mouse.clicks (\a -> OnMouseClick a)
+
+    -- TOPIC PAGE
+
+
+    , Sub.map TopicPageMsg (PostPort.responseTopics (TopicTypes.TopicAction << PostTypes.All))
     ]
 

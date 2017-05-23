@@ -62,6 +62,7 @@ linkView route label currentRoute =
       , onClickPreventDefault (NavigateTo route) ] 
       [ text label ]
 
+
 brandView : Model -> Html Msg
 brandView model = 
     a [ class "header-brand" 

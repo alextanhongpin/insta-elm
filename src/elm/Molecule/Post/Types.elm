@@ -1,4 +1,4 @@
-module Molecule.Post.Types exposing (..)
+module Molecule.Post.Types exposing (TopicMsg(..), Post, PostID, Topic, TopicID)
 
 
 
@@ -30,9 +30,10 @@ type alias Topic =
     , url : String
     , photoURL : String }
 
+
 -- MSG
 
 
---type TopicMsg 
---    = All (List(TopicID, Topic))
---    | 
+type TopicMsg
+    -- Get a list of topic
+    = All (List(TopicID, Topic))

@@ -1,7 +1,7 @@
 module Page.Topic.Types exposing (..)
 
 
-import Molecule.Post.Types exposing (TopicID, Topic)
+import Molecule.Post.Types exposing (TopicID, Topic, TopicMsg)
 
 -- MODEL
 
@@ -54,6 +54,7 @@ type Msg
     | OnTypeContent String
     | OnTypeTitle String
     | SubmitPost
+    | TopicAction TopicMsg
 
 
 

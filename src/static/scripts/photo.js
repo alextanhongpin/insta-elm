@@ -220,5 +220,4 @@ class Photo {
   //   });
   // });
 
-// module.exports = Photo
-export default Photo
+module.exports = Photo

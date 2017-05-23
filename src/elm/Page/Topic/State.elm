@@ -1,19 +1,33 @@
 module Page.Topic.State exposing (update)
 
-import Molecule.Post.Types exposing (Topic)
+
+-- MOLECULE
+
+
+import Molecule.Post.Types exposing (Topic, TopicID, TopicMsg(..))
+import Molecule.Post.Port exposing (createTopic)
+
+
+-- PAGE
+
+
 import Page.Topic.Types exposing (Model, Msg(..))
+
+
+-- UPDATE
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of 
         Nth ->
-            (model, Cmd.none)
+            model ! []
 
         GoTo topic id ->
-            (model, Cmd.none)
+            model ! []
 
         GoToTopic topic ->
-            (model, Cmd.none)
+            model ! []
 
         ToggleForm ->
             case model.showForm of
@@ -21,7 +35,7 @@ update msg model =
                 Just state ->
                     { model
                         | showForm = Just(not state)
-                        , newPost = Topic "" "" "" "" "" "" 0 "" ""
+                        , newPost = makeTopic
                     } ! []
 
                 Nothing ->
@@ -39,14 +53,15 @@ update msg model =
                 Nothing ->
                     { model | topics = Just([ ("1", Topic "John Doe" "Today" "Today" "Hello World" "This is a hello world content" "apple" 0 "none" "") ])} ! []
 
-
+        -- Hide the form 
         HideForm ->
             -- NOTE: Clear the form when hiding the form
             { model
                 | showForm = Just(False)
-                , newPost = Topic "" "" "" "" "" "" 0 "" ""
+                , newPost = makeTopic
             } ! []
 
+        -- Action when user is typing the content
         OnTypeContent content ->
             let
                 newPost = model.newPost
@@ -54,6 +69,7 @@ update msg model =
             in
                 { model | newPost = updatedPost } ! [] 
 
+        -- Action when user is typing the title
         OnTypeTitle title ->
             let
                 newPost = model.newPost
@@ -61,6 +77,7 @@ update msg model =
             in
                 { model | newPost = updatedPost } ! [] 
 
+        -- Submit post will call the createTopic port
         SubmitPost ->
             let
                 post = model.newPost
@@ -74,16 +91,30 @@ update msg model =
                     Just topics ->
                         { model
                             | topics = Just(topics ++ [ ("4", newPost) ])
-                            , newPost = Topic "" "" "" "" "" "" 0 "" ""
-                        } ! []  
+                            , newPost = makeTopic
+                        } ! [ createTopic model.newPost ]
 
                     Nothing ->
                         { model
                             | topics = Just([ ("4", newPost) ])
-                            , newPost = Topic "" "" "" "" "" "" 0 "" ""
+                            , newPost = makeTopic
                         } ! []
 
+        -- Handle Topic action. Topic action will call the port to trigger the
+        -- firebase
+        TopicAction childMsg ->
+            case childMsg of
+                All out ->
+                    model ! []
 
+
+-- UTIL
+
+
+-- FACTORY PATTERN: Create a new topic
+makeTopic : Topic
+makeTopic =
+    Topic "" "" "" "" "" "" 0 "" ""
 
 
 
