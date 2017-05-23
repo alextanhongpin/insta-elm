@@ -6,6 +6,7 @@ require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js')   /
 // inject bundled Elm app into div#main
 const Elm = require('../elm/Main')
 const app = Elm.Main.embed(document.getElementById('main'))
+const config = require('./scripts/config/firebase.js')
 const Comment = require('./scripts/comment.js')
 const Photo = require('./scripts/photo.js')
 // var Topic = require('./scripts/topic.js')
@@ -14,16 +15,6 @@ const User = require('./scripts/user.js')
 
 // Holds the firebase context model
 const models = {}
-
-const config = {
-    // Place firebase config here
-  apiKey: 'AIzaSyCVDboPN9FMcAaFf3teK4wxhAgf0VePCm8',
-  authDomain: 'instaelm-9f923.firebaseapp.com',
-  databaseURL: 'https://instaelm-9f923.firebaseio.com',
-  projectId: 'instaelm-9f923',
-  storageBucket: 'instaelm-9f923.appspot.com',
-  messagingSenderId: '838973904562'
-}
 firebase.initializeApp(config)
 
 // AUTH
