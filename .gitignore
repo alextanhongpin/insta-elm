@@ -3,4 +3,4 @@ node_modules/
 tmp/
 dist/
 .env
-static/scripts/config/
+src/static/scripts/config/
